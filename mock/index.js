@@ -5,6 +5,9 @@ const user = require('./user')
 const usermanagement = require('./usermanagement')
 const rolemanagement = require('./rolemanagement')
 const appusermanagement = require('./appusermanagement')
+const appmanagement = require('./appmanagement')
+const keymanagement = require('./keymanagement')
+const certificatemanagement = require('./certificatemanagement')
 const table = require('./table')
 
 const mocks = [
@@ -12,6 +15,9 @@ const mocks = [
   ...usermanagement,
   ...rolemanagement,
   ...appusermanagement,
+  ...appmanagement,
+  ...keymanagement,
+  ...certificatemanagement,
   ...table
 ]
 

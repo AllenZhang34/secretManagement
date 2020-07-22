@@ -62,15 +62,15 @@ export const constantRoutes = [
     meta: { title: '密钥管理', icon: 'lock' },
     children: [
       {
-        path: 'certMnt',
-        name: 'CertMnt',
-        component: () => import('@/views/secretKeyManagement/certMnt'),
+        path: 'certificateManagement',
+        name: 'CertificateManagement',
+        component: () => import('@/views/secretKeyManagement/certificateManagement'),
         meta: { title: '证书管理' }
       },
       {
-        path: 'lifeCircle',
-        name: 'LifeCircle',
-        component: () => import('@/views/secretKeyManagement/lifeCircle'),
+        path: 'keylifeCircle',
+        name: 'KeyifeCircle',
+        component: () => import('@/views/secretKeyManagement/keylifeCircle'),
         meta: { title: '密钥生命周期' }
       }
     ]
@@ -91,7 +91,7 @@ export const constantRoutes = [
         path: 'systemConfig',
         name: 'SystemConfig',
         component: () => import('@/views/appManagement/systemConfig'),
-        meta: { title: '应用系统配置管理' }
+        meta: { title: '应用系统管理' }
       }
     ]
   },
