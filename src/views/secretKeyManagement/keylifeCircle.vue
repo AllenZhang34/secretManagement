@@ -34,24 +34,29 @@
             <span>{{ row.keyName }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="类型" align="center">
+        <el-table-column label="密钥类型" align="center">
           <template slot-scope="{row}">
-            <span>{{ row.keyType }}</span>
+            <el-tag
+              effect="plain"
+              :type="row.keyType | keyTypeFilter"
+            >{{ row.keyType }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="长度" align="center">
+        <el-table-column label="密钥长度" align="center">
           <template slot-scope="{row}">
             <span>{{ row.keyLength }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="有效期" align="center">
+        <el-table-column label="密钥有效期" align="center">
           <template slot-scope="{row}">
             <span>{{ row.keyTimestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="状态" align="center">
+        <el-table-column label="密钥状态" align="center">
           <template slot-scope="{row}">
-            <span>{{ row.keyStatus }}</span>
+            <el-tag
+              :type="row.keyStatus | keyStatusFilter"
+            >{{ row.keyStatus }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="创建日期" align="center">
@@ -61,9 +66,9 @@
         </el-table-column>
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template slot-scope="{row}">
-            <el-button type="text" @click="handleUpdate(row)">延期</el-button>
-            <el-button type="text" style="color:red" @click="handleDelete(row)">归档</el-button>
-            <el-button type="text" style="color:red" @click="handleDelete(row)">作废</el-button>
+            <el-button type="text" v-show="row.keyStatus !== '作废'" @click="handleDelay(row)">延期</el-button>
+            <el-button type="text" v-show="row.keyStatus !== '归档'" style="color:red" @click="handleArchive(row)">归档</el-button>
+            <el-button type="text" v-show="row.keyStatus !== '作废'" style="color:red" @click="handleDelete(row)">作废</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -93,6 +98,22 @@ export default {
     Pagination
   },
   filters: {
+    keyTypeFilter(type) {
+      const keyMap = {
+        加密: "",
+        签名: "info"
+      };
+      return keyMap[type];
+    },
+    keyStatusFilter(status) {
+      const statusMap = {
+        有效: "success",
+        失效: "danger",
+        归档: "warning",
+        作废: "info"
+      };
+      return statusMap[status];
+    },
     parseTime: parseTime
   },
   data() {

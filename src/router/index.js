@@ -71,7 +71,7 @@ export const constantRoutes = [
         path: 'keylifeCircle',
         name: 'KeyifeCircle',
         component: () => import('@/views/secretKeyManagement/keylifeCircle'),
-        meta: { title: '密钥生命周期' }
+        meta: { title: '密钥清单' }
       }
     ]
   },
