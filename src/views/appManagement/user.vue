@@ -48,21 +48,24 @@
         type="primary"
         icon="el-icon-document"
         @click="handleAppUserUpload"
-      >批量上传</el-button>-->
+      >批量上传</el-button>
       <el-input
         v-model="filename"
         placeholder="请输入文件名称（默认：应用用户列表）"
         style="width:250px;"
         prefix-icon="el-icon-document"
-      />
+      />-->
       <el-button
         class="filter-item"
-        style="margin-left: 10px;"
         type="primary"
         icon="el-icon-download"
-        @click="handleAppUserExport"
-      >批量导出</el-button>
-      <upload-excel-component class="filter-item" :on-success="handleSuccess" :before-upload="beforeUpload" />
+        @click="handleAppUserExportTemplate"
+      >下载模板</el-button>
+      <upload-excel-component
+        class="filter-item"
+        :on-success="handleSuccess"
+        :before-upload="beforeUpload"
+      />
       <el-button
         class="filter-item"
         style="margin-left: 10px;"
@@ -138,7 +141,7 @@
         :rules="rules"
         :model="temp"
         label-position="left"
-        label-width="70px"
+        label-width="90px"
         style="width: 400px; margin-left:50px;"
       >
         <el-form-item label="用户名" prop="appUserName">
@@ -171,7 +174,7 @@ import {
   fetchAppUser,
   createAppUser,
   updateAppUser,
-  deleteAppUser
+  deleteAppUser,
 } from "@/api/appusermanagement";
 
 import UploadExcelComponent from "@/components/UploadExcel/index.vue";
@@ -182,32 +185,32 @@ export default {
   name: "AppUserManagementList",
   components: {
     Pagination,
-    UploadExcelComponent
+    UploadExcelComponent,
   },
   filters: {
     keyFilter(key) {
       const keyMap = {
         none: "info",
         generate: "success",
-        archive: "danger"
+        archive: "danger",
       };
       return keyMap[key];
     },
-    parseTime: parseTime
+    parseTime: parseTime,
   },
   data() {
     return {
       list: null,
       total: 0,
       listLoading: true,
-      filename: "",
+      filename: "应用用户模板",
       multipleSelection: [],
       listQuery: {
         page: 1,
         limit: 20,
         appUserName: undefined,
         appSystem: undefined,
-        appUserType: undefined
+        appUserType: undefined,
       },
       appUserTypeOptions: ["通用用户", "业务用户"],
       appSystemOptions: ["系统1", "系统2"],
@@ -216,7 +219,7 @@ export default {
         appUserName: "",
         appUserType: "",
         appSystem: "",
-        timestamp: new Date()
+        timestamp: new Date(),
       },
       dialogFormVisible: false,
       rules: {
@@ -224,22 +227,22 @@ export default {
           {
             required: true,
             message: "user name is required",
-            trigger: "change"
-          }
+            trigger: "change",
+          },
         ],
 
         appUserType: [
           {
             required: true,
             message: "user type is required",
-            trigger: "change"
-          }
+            trigger: "change",
+          },
         ],
 
         appSystem: [
-          { required: true, message: "system is required", trigger: "blur" }
-        ]
-      }
+          { required: true, message: "system is required", trigger: "blur" },
+        ],
+      },
     };
   },
   created() {
@@ -248,7 +251,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true;
-      fetchAppUserList(this.listQuery).then(response => {
+      fetchAppUserList(this.listQuery).then((response) => {
         this.list = response.data.items;
         this.total = response.data.total;
 
@@ -270,7 +273,7 @@ export default {
         appUserName: "",
         appUserType: "",
         appSystem: "",
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     },
 
@@ -283,7 +286,7 @@ export default {
     },
 
     createAppUserData() {
-      this.$refs["dataForm"].validate(valid => {
+      this.$refs["dataForm"].validate((valid) => {
         if (valid) {
           this.temp.id = parseInt(Math.random() * 100) + 1024; // mock a id
           createAppUser(this.temp).then(() => {
@@ -293,7 +296,7 @@ export default {
               title: "创建成功",
               message: "创建成功",
               type: "success",
-              duration: 2000
+              duration: 2000,
             });
           });
         }
@@ -303,8 +306,9 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-    handleAppUserExport() {
-      if (this.multipleSelection.length) {
+
+    handleAppUserExportTemplate() {
+            
         this.downloadLoading = true;
         import("@/vendor/Export2Excel").then(excel => {
           const tHeader = [
@@ -315,16 +319,7 @@ export default {
             "加密密钥对",
             "日期"
           ];
-          const filterVal = [
-            "appUserName",
-            "appUserType",
-            "appSystem",
-            "signaturekey",
-            "encryptionkey",
-            "timestamp"
-          ];
-          const list = this.multipleSelection;
-          const data = this.formatJson(filterVal, list);
+          const data = [];
           excel.export_json_to_excel({
             header: tHeader,
             data,
@@ -333,16 +328,48 @@ export default {
           this.$refs.multipleTable.clearSelection();
           this.downloadLoading = false;
         });
-      } else {
-        this.$message({
-          message: "请选择一条应用用户信息",
-          type: "warning"
-        });
-      }
+     
     },
+    // handleAppUserExport() {
+    //   if (this.multipleSelection.length) {
+    //     this.downloadLoading = true;
+    //     import("@/vendor/Export2Excel").then(excel => {
+    //       const tHeader = [
+    //         "用户名",
+    //         "用户类型",
+    //         "系统",
+    //         "签名密钥对",
+    //         "加密密钥对",
+    //         "日期"
+    //       ];
+    //       const filterVal = [
+    //         "appUserName",
+    //         "appUserType",
+    //         "appSystem",
+    //         "signaturekey",
+    //         "encryptionkey",
+    //         "timestamp"
+    //       ];
+    //       const list = this.multipleSelection;
+    //       const data = this.formatJson(filterVal, list);
+    //       excel.export_json_to_excel({
+    //         header: tHeader,
+    //         data,
+    //         filename: this.filename
+    //       });
+    //       this.$refs.multipleTable.clearSelection();
+    //       this.downloadLoading = false;
+    //     });
+    //   } else {
+    //     this.$message({
+    //       message: "请选择一条应用用户信息",
+    //       type: "warning"
+    //     });
+    //   }
+    // },
 
     formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => v[j]));
+      return jsonData.map((v) => filterVal.map((j) => v[j]));
     },
 
     beforeUpload(file) {
@@ -354,27 +381,27 @@ export default {
 
       this.$message({
         message: "Please do not upload files larger than 1m in size.",
-        type: "warning"
+        type: "warning",
       });
       return false;
     },
 
     handleSuccess({ results, header }) {
       let aData = [];
-      debugger
-      results.forEach(item => {
-        debugger
+      debugger;
+      results.forEach((item) => {
+        debugger;
         let oUploadData = {
-          appUserName:item["用户名"],
-          appUserType:item["用户类型"],
-          appSystem:item["系统"],
-          signaturekey:item["签名密钥对"],
-          encryptionkey:item["加密密钥对"],
-          timestamp:item["日期"]
-        }
+          appUserName: item["用户名"],
+          appUserType: item["用户类型"],
+          appSystem: item["系统"],
+          signaturekey: item["签名密钥对"],
+          encryptionkey: item["加密密钥对"],
+          timestamp: item["日期"],
+        };
         aData.push(oUploadData);
       });
-      this.list = aData.concat(this.list)
+      this.list = aData.concat(this.list);
     },
 
     handleAppUserGenerateKey() {
@@ -385,21 +412,21 @@ export default {
       this.$confirm("确定要删除该用户吗?", "提示", {
         confirmButtonText: "确认",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
         .then(async () => {
           await deleteUser(row.id);
           this.list.splice(index, 1);
           this.$message({
             type: "success",
-            message: "删除成功!"
+            message: "删除成功!",
           });
         })
-        .catch(err => {
+        .catch((err) => {
           console.error(err);
         });
-    }
-  }
+    },
+  },
 };
 </script>
 

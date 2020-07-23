@@ -2,12 +2,21 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input
-        v-model="listQuery.keyId"
-        placeholder="密钥ID"
+        v-model="listQuery.keyName"
+        placeholder="密钥名称"
         style="width: 200px;"
         class="filter-item"
         @keyup.enter.native="handleKeyFilter"
       />
+      <el-select
+        v-model="listQuery.keyStatus"
+        placeholder="密钥状态"
+        clearable
+        style="width: 120px"
+        class="filter-item"
+      >
+        <el-option v-for="item in keyStatusOptions" :key="item" :label="item" :value="item" />
+      </el-select>
       <el-button
         class="filter-item"
         type="primary"
@@ -20,7 +29,7 @@
         v-loading="listLoading"
         :data="list"
         element-loading-text="拼命加载中"
-        border
+        stripe
         fit
         highlight-current-row
       >
@@ -66,8 +75,8 @@
         </el-table-column>
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template slot-scope="{row}">
-            <el-button type="text" v-show="row.keyStatus !== '作废'" @click="handleDelay(row)">延期</el-button>
-            <el-button type="text" v-show="row.keyStatus !== '归档'" style="color:red" @click="handleArchive(row)">归档</el-button>
+            <el-button type="text" v-show="row.keyStatus !== '作废' && row.keyStatus !== '归档'" @click="handleDelay(row)">延期</el-button>
+            <el-button type="text" v-show="row.keyStatus !== '作废' && row.keyStatus !== '归档'" style="color:grey" @click="handleArchive(row)">归档</el-button>
             <el-button type="text" v-show="row.keyStatus !== '作废'" style="color:red" @click="handleDelete(row)">作废</el-button>
           </template>
         </el-table-column>
@@ -124,8 +133,10 @@ export default {
       listQuery: {
         page: 1,
         limit: 20,
-        keyId: undefined
-      }
+        keyName: undefined,
+        keyStatus: undefined
+      },
+      keyStatusOptions:["有效", "失效","归档","作废"]
     };
   },
   created() {

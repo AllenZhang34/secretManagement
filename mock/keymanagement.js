@@ -24,10 +24,11 @@ module.exports = [
     url: '/vue-element-template/keymanagement/list',
     type: 'get',
     response: config => {
-      const { keyId, page = 1, limit = 20 } = config.query
+      const { keyName, keyStatus,page = 1, limit = 20 } = config.query
 
       let mockList = List.filter(item => {
-        if (keyId && item.keyId.indexOf(keyId) < 0) return false
+        if (keyName && item.keyName.indexOf(keyName) < 0) return false
+        if (keyStatus && item.keyStatus !== keyStatus) return false
         return true
       })
 

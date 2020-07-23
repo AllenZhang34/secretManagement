@@ -110,12 +110,13 @@
           <el-upload
             class="upload-demo"
             drag
+            :show-file-list="false"
             action="https://jsonplaceholder.typicode.com/posts/"
             :before-upload="beforeCertificateUpload"
           >
             <i class="el-icon-upload"></i>
             <div class="el-upload__text">
-              将文件拖到此处，或
+              将证书拖到此处，或
               <em>点击上传</em>
             </div>
           </el-upload>
@@ -211,7 +212,7 @@ export default {
   },
   methods: {
     beforeCertificateUpload(file) {
-      console.log(file);
+      this.$message.error('证书文件格式错误!');
     },
 
     getList() {

@@ -27,7 +27,6 @@
         v-loading="listLoading"
         :data="list"
         element-loading-text="拼命加载中"
-        border
         fit
         highlight-current-row
       >
@@ -127,7 +126,6 @@
         <el-form-item label="操作者" prop="appOperator">
           <el-select
             v-model="temp.operatorValue"
-            value-key="label"
             multiple
             filterable
             remote
@@ -138,9 +136,8 @@
           >
             <el-option
               v-for="item in operatorOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+              :key="item"
+              :value="item"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -148,7 +145,6 @@
         <el-form-item label="解密者" prop="appDecryptor">
           <el-select
             v-model="temp.decryptorValue"
-            value-key="label"
             multiple
             filterable
             remote
@@ -159,9 +155,8 @@
           >
             <el-option
               v-for="item in decryptorOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+              :key="item"
+              :value="item"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -287,12 +282,12 @@ export default {
     this.getList();
   },
   mounted() {
-    this.operatorList = this.operatorStates.map(item => {
-      return { operatorValue: `value:${item}`, label: `label:${item}` };
-    });
-    this.decryptorList = this.decryptorStates.map(item => {
-      return { decryptorValue: `value:${item}`, label: `label:${item}` };
-    });
+    // this.operatorList = this.operatorStates.map(item => {
+    //   return { operatorValue: `value:${item}`, label: `label:${item}` };
+    // });
+    // this.decryptorList = this.decryptorStates.map(item => {
+    //   return { decryptorValue: `value:${item}`, label: `label:${item}` };
+    // });
   },
   methods: {
     remoteGetOperatorMethod(query) {
@@ -300,8 +295,8 @@ export default {
         this.loading = true;
         setTimeout(() => {
           this.loading = false;
-          this.operatorOptions = this.operatorList.filter(item => {
-            return item.label.toLowerCase().indexOf(query.toLowerCase()) > -1;
+          this.operatorOptions = this.operatorStates.filter(item => {
+            return item.toLowerCase().indexOf(query.toLowerCase()) > -1;
           });
         }, 200);
       } else {
@@ -314,8 +309,8 @@ export default {
         this.loading = true;
         setTimeout(() => {
           this.loading = false;
-          this.decryptorOptions = this.operatorList.filter(item => {
-            return item.label.toLowerCase().indexOf(query.toLowerCase()) > -1;
+          this.decryptorOptions = this.decryptorStates.filter(item => {
+            return item.toLowerCase().indexOf(query.toLowerCase()) > -1;
           });
         }, 200);
       } else {

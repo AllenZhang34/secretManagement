@@ -55,13 +55,13 @@ const constantRoutes = [
         {
           path: 'certificateManagement',
           name: 'CertificateManagement',
-          component: () => import('@/views/secretKeyManagement/certificateManagement'),
+          component: 'views/secretKeyManagement/certificateManagement',
           meta: { title: '证书管理' }
         },
         {
           path: 'keylifeCircle',
           name: 'KeyifeCircle',
-          component: () => import('@/views/secretKeyManagement/keylifeCircle'),
+          component: 'views/secretKeyManagement/keylifeCircle',
           meta: { title: '密钥清单' }
         }
       ]
@@ -75,13 +75,13 @@ const constantRoutes = [
         {
           path: 'user',
           name: 'User',
-          component: () => import('@/views/appManagement/user'),
+          component: 'views/appManagement/user',
           meta: { title: '应用用户管理' }
         },
         {
           path: 'systemConfig',
           name: 'SystemConfig',
-          component: () => import('@/views/appManagement/systemConfig'),
+          component: 'views/appManagement/systemConfig',
           meta: { title: '应用系统管理' }
         }
       ]
@@ -95,19 +95,19 @@ const constantRoutes = [
         {
           path: 'list',
           name: 'List',
-          component: () => import('@/views/blank'),
+          component: 'views/blank',
           meta: { title: '日志查询' }
         },
         {
           path: 'analysis',
           name: 'Analysis',
-          component: () => import('@/views/blank'),
+          component: 'views/blank',
           meta: { title: '报表分析' }
         },
         {
           path: 'config',
           name: 'Config',
-          component: () => import('@/views/blank'),
+          component: 'views/blank',
           meta: { title: '日志配置' }
         }
       ]
@@ -121,19 +121,19 @@ const constantRoutes = [
         {
           path: 'serviceAudit',
           name: 'ServiceAudit',
-          component: () => import('@/views/blank'),
+          component: 'views/blank',
           meta: { title: '密码服务审计' }
         },
         {
           path: 'keyUsageAudit',
           name: 'KeyUsageAudit',
-          component: () => import('@/views/blank'),
+          component: 'views/blank',
           meta: { title: '密钥使用审计' }
         },
         {
           path: 'report',
           name: 'Report',
-          component: () => import('@/views/blank'),
+          component: 'views/blank',
           meta: { title: '报表分析' }
         }
       ]
@@ -147,19 +147,19 @@ const constantRoutes = [
         {
           path: 'user',
           name: 'User',
-          component: () => import('@/views/system/user'),
+          component: 'views/system/user',
           meta: { title: '用户管理' }
         },
         {
           path: 'role',
           name: 'Role',
-          component: () => import('@/views/system/role'),
+          component: 'views/system/role',
           meta: { title: '角色管理' }
         },
         {
           path: 'config',
           name: 'Config',
-          component: () => import('@/views/system/config'),
+          component: 'views/system/config',
           meta: { title: '配置管理' }
         }
       ]

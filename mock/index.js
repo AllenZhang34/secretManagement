@@ -8,6 +8,7 @@ const appusermanagement = require('./appusermanagement')
 const appmanagement = require('./appmanagement')
 const keymanagement = require('./keymanagement')
 const certificatemanagement = require('./certificatemanagement')
+const configmanagement = require('./configmanagement')
 const table = require('./table')
 
 const mocks = [
@@ -18,6 +19,7 @@ const mocks = [
   ...appmanagement,
   ...keymanagement,
   ...certificatemanagement,
+  ...configmanagement,
   ...table
 ]
 
