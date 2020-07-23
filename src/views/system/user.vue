@@ -8,7 +8,7 @@
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
-      <el-input
+      <!--<el-input
         v-model="listQuery.username"
         placeholder="用户名"
         style="width: 200px;"
@@ -32,7 +32,7 @@
         class="filter-item"
       >
         <el-option v-for="item in statusptions" :key="item" :label="item" :value="item" />
-      </el-select>
+      </el-select>-->
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
       <el-button
         class="filter-item"
@@ -110,7 +110,7 @@
         style="width: 400px; margin-left:50px;"
       >
         <el-form-item label="账户" prop="account">
-          <el-input v-model="temp.account" tabindex="1" />
+          <el-input :disabled="dialogStatus==='create'?false:true" v-model="temp.account" tabindex="1" />
         </el-form-item>
 
         <el-form-item label="用户名" prop="username">

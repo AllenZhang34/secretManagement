@@ -164,6 +164,12 @@ export const constantRoutes = [
         name: 'Role',
         component: () => import('@/views/system/role'),
         meta: { title: '角色管理' }
+      },
+      {
+        path: 'config',
+        name: 'Config',
+        component: () => import('@/views/system/config'),
+        meta: { title: '配置管理' }
       }
     ]
   },
