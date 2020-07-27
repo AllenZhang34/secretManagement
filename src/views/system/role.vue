@@ -79,25 +79,25 @@
 </template>
 
 <script>
-import path from "path";
-import { deepClone } from "@/utils";
+import path from 'path'
+import { deepClone } from '@/utils'
 import {
   getRoutes,
   getRoles,
   createRole,
   updateRole,
   deleteRole
-} from "@/api/rolemanagement";
+} from '@/api/rolemanagement'
 
 const defaultRole = {
   id: undefined,
-  rolename: "",
-  description: "",
+  rolename: '',
+  description: '',
   routes: []
-};
+}
 
 export default {
-  name: "RolemanagementList",
+  name: 'RolemanagementList',
   data() {
     return {
       temp: Object.assign({}, defaultRole),
@@ -105,10 +105,10 @@ export default {
       routes: [],
       dialogFormVisible: false,
       checkStrictly: false,
-      dialogStatus: "",
+      dialogStatus: '',
       textMap: {
-        update: "编辑角色",
-        create: "创建角色"
+        update: '编辑角色',
+        create: '创建角色'
       },
       defaultProps: {
         children: 'children',
@@ -118,84 +118,84 @@ export default {
         rolename: [
           {
             required: true,
-            message: "请输入角色名称",
-            trigger: "change"
+            message: '请输入角色名称',
+            trigger: 'change'
           }
         ],
         description: [
           {
             required: true,
-            message: "请输入描述",
-            trigger: "change"
+            message: '请输入描述',
+            trigger: 'change'
           }
         ]
       }
-    };
+    }
   },
   computed: {
     routesData() {
-      return this.routes;
+      return this.routes
     }
   },
   created() {
-    this.getRoutes();
-    this.getRoles();
+    this.getRoutes()
+    this.getRoles()
   },
   methods: {
     async getRoutes() {
-      const res = await getRoutes();
-      this.serviceRoutes = res.data;
-      this.routes = this.generateRoutes(res.data);
+      const res = await getRoutes()
+      this.serviceRoutes = res.data
+      this.routes = this.generateRoutes(res.data)
     },
     async getRoles() {
-      const res = await getRoles();
-      this.roleList = res.data;
+      const res = await getRoles()
+      this.roleList = res.data
     },
 
-    generateRoutes(routes, basePath = "/") {
-      const res = [];
+    generateRoutes(routes, basePath = '/') {
+      const res = []
 
       for (let route of routes) {
         // skip some route
         if (route.hidden) {
-          continue;
+          continue
         }
 
         const onlyOneShowingChild = this.onlyOneShowingChild(
           route.children,
           route
-        );
+        )
 
         if (route.children && onlyOneShowingChild && !route.alwaysShow) {
-          route = onlyOneShowingChild;
+          route = onlyOneShowingChild
         }
 
         const data = {
           path: path.resolve(basePath, route.path),
           title: route.meta && route.meta.title
-        };
+        }
 
         // recursive child routes
         if (route.children) {
-          data.children = this.generateRoutes(route.children, data.path);
+          data.children = this.generateRoutes(route.children, data.path)
         }
-        res.push(data);
+        res.push(data)
       }
-      return res;
+      return res
     },
 
     generateArr(routes) {
-      let data = [];
+      let data = []
       routes.forEach(route => {
-        data.push(route);
+        data.push(route)
         if (route.children) {
-          const temp = this.generateArr(route.children);
+          const temp = this.generateArr(route.children)
           if (temp.length > 0) {
-            data = [...data, ...temp];
+            data = [...data, ...temp]
           }
         }
-      });
-      return data;
+      })
+      return data
     },
 
     generateTree(routes, basePath = '/', checkedKeys) {
@@ -237,23 +237,23 @@ export default {
     },
 
     handleRoleCreate() {
-      this.temp = Object.assign({}, defaultRole);
+      this.temp = Object.assign({}, defaultRole)
       if (this.$refs.tree) {
-        this.$refs.tree.setCheckedNodes([]);
+        this.$refs.tree.setCheckedNodes([])
       }
-      this.dialogStatus = "create";
-      this.dialogFormVisible = true;
+      this.dialogStatus = 'create'
+      this.dialogFormVisible = true
     },
 
     handleRoleUpdate(row, index) {
-      this.temp = Object.assign({}, row); // copy obj
-      this.dialogStatus = "update";
-      this.dialogFormVisible = true;
-      this.checkStrictly = true;
-      const routes = this.generateRoutes(this.temp.routes);
-      this.$refs.tree.setCheckedNodes(this.generateArr(routes));
+      this.temp = Object.assign({}, row) // copy obj
+      this.dialogStatus = 'update'
+      this.dialogFormVisible = true
+      this.checkStrictly = true
+      const routes = this.generateRoutes(this.temp.routes)
+      this.$refs.tree.setCheckedNodes(this.generateArr(routes))
       // set checked state of a node not affects its father and child nodes
-      this.checkStrictly = false;
+      this.checkStrictly = false
     },
 
     async confirmRole() {
@@ -263,13 +263,13 @@ export default {
       this.role.routes = this.generateTree(deepClone(this.serviceRoutes), '/', checkedKeys)
 
       if (isEdit) {
-        const tempData = Object.assign({}, this.temp);
+        const tempData = Object.assign({}, this.temp)
         await updateRole(tempData)
-        const index = this.roleList.findIndex(v => v.id === this.temp.id);
-        this.roleList.splice(index, 1, this.temp);
+        const index = this.roleList.findIndex(v => v.id === this.temp.id)
+        this.roleList.splice(index, 1, this.temp)
       } else {
-        await createRole(this.temp);
-        this.roleList.unshift(this.temp); 
+        await createRole(this.temp)
+        this.roleList.unshift(this.temp)
       }
 
       const { description, key, name } = this.role
@@ -286,27 +286,26 @@ export default {
     },
 
     handleRoleDelete(row, index) {
-      this.$confirm("确定要删除该角色吗?", "提示", {
-        confirmButtonText: "确认",
-        cancelButtonText: "取消",
-        type: "warning"
+      this.$confirm('确定要删除该角色吗?', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
-        .then(async () => {
-          await deleteRole(row.id);
-          this.roleList.splice(index, 1);
+        .then(async() => {
+          await deleteRole(row.id)
+          this.roleList.splice(index, 1)
           this.$message({
-            type: "success",
-            message: "删除成功!"
-          });
+            type: 'success',
+            message: '删除成功!'
+          })
         })
         .catch(err => {
-          console.error(err);
-        });
+          console.error(err)
+        })
     }
 
-
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

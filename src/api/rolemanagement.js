@@ -9,11 +9,10 @@ export function getRoutes() {
 
 export function getRoles() {
   return request({
-    url: '/vue-element-template/rolemanagement/list',
+    url: '/vue-element-template/rolemanagement/roles',
     method: 'get'
   })
 }
-
 
 export function createRole(data) {
   return request({

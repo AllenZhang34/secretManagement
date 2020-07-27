@@ -53,8 +53,10 @@ export const constantRoutes = [
       component: () => import('@/views/dashboard/index'),
       meta: { title: 'Dashboard', icon: 'dashboard' }
     }]
-  },
+  }
+]
 
+export const asyncRoutes = [
   {
     path: '/secretKeyManagement',
     component: Layout,

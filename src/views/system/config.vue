@@ -215,15 +215,15 @@
 </template>
 
 <script>
-import Pagination from "@/components/Pagination";
-import { parseTime } from "@/utils";
+import Pagination from '@/components/Pagination'
+import { parseTime } from '@/utils'
 export default {
-  name: "ConfigmanagementList",
+  name: 'ConfigmanagementList',
   components: {
-    Pagination,
+    Pagination
   },
   filters: {
-    parseTime: parseTime,
+    parseTime: parseTime
   },
   data() {
     return {
@@ -234,34 +234,34 @@ export default {
       connectAppTypeListQuery: {},
       dialogFormVisible: false,
       textMap: {
-        update: "编辑用户",
-        create: "创建用户",
+        update: '编辑用户',
+        create: '创建用户'
       },
       temp: {
         id: undefined,
-        type: "",
-        name: "",
-        description: "",
+        type: '',
+        name: '',
+        description: ''
       },
-      dialogStatus: "",
+      dialogStatus: '',
       rules: {
-        type: [{ required: true, message: "请选择类型", trigger: "change" }],
+        type: [{ required: true, message: '请选择类型', trigger: 'change' }],
         name: [
-          { required: true, message: "请输入用户名称", trigger: "change" },
-        ],
-      },
-    };
+          { required: true, message: '请输入用户名称', trigger: 'change' }
+        ]
+      }
+    }
   },
   created() {
-    this.getConnectSystemList();
+    this.getConnectSystemList()
   },
   methods: {
     handleConnectSystemFilter() {},
     handleConfigCreate() {},
     handleAppTypeFilter() {},
-    getConnectSystemList() {},
-  },
-};
+    getConnectSystemList() {}
+  }
+}
 </script>
 
 <style scoped>

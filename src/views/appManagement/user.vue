@@ -171,164 +171,159 @@
 <script>
 import {
   fetchAppUserList,
-  fetchAppUser,
-  createAppUser,
-  updateAppUser,
-  deleteAppUser,
-} from "@/api/appusermanagement";
+  createAppUser
+} from '@/api/appusermanagement'
 
-import UploadExcelComponent from "@/components/UploadExcel/index.vue";
-import Pagination from "@/components/Pagination";
-import { parseTime } from "@/utils";
+import UploadExcelComponent from '@/components/UploadExcel/index.vue'
+import Pagination from '@/components/Pagination'
+import { parseTime } from '@/utils'
 
 export default {
-  name: "AppUserManagementList",
+  name: 'AppUserManagementList',
   components: {
     Pagination,
-    UploadExcelComponent,
+    UploadExcelComponent
   },
   filters: {
     keyFilter(key) {
       const keyMap = {
-        none: "info",
-        generate: "success",
-        archive: "danger",
-      };
-      return keyMap[key];
+        none: 'info',
+        generate: 'success',
+        archive: 'danger'
+      }
+      return keyMap[key]
     },
-    parseTime: parseTime,
+    parseTime: parseTime
   },
   data() {
     return {
       list: null,
       total: 0,
       listLoading: true,
-      filename: "应用用户模板",
+      filename: '应用用户模板',
       multipleSelection: [],
       listQuery: {
         page: 1,
         limit: 20,
         appUserName: undefined,
         appSystem: undefined,
-        appUserType: undefined,
+        appUserType: undefined
       },
-      appUserTypeOptions: ["通用用户", "业务用户"],
-      appSystemOptions: ["系统1", "系统2"],
+      appUserTypeOptions: ['通用用户', '业务用户'],
+      appSystemOptions: ['系统1', '系统2'],
       temp: {
         id: undefined,
-        appUserName: "",
-        appUserType: "",
-        appSystem: "",
-        timestamp: new Date(),
+        appUserName: '',
+        appUserType: '',
+        appSystem: '',
+        timestamp: new Date()
       },
       dialogFormVisible: false,
       rules: {
         appUserName: [
           {
             required: true,
-            message: "user name is required",
-            trigger: "change",
-          },
+            message: 'user name is required',
+            trigger: 'change'
+          }
         ],
 
         appUserType: [
           {
             required: true,
-            message: "user type is required",
-            trigger: "change",
-          },
+            message: 'user type is required',
+            trigger: 'change'
+          }
         ],
 
         appSystem: [
-          { required: true, message: "system is required", trigger: "blur" },
-        ],
-      },
-    };
+          { required: true, message: 'system is required', trigger: 'blur' }
+        ]
+      }
+    }
   },
   created() {
-    this.getList();
+    this.getList()
   },
   methods: {
     getList() {
-      this.listLoading = true;
+      this.listLoading = true
       fetchAppUserList(this.listQuery).then((response) => {
-        this.list = response.data.items;
-        this.total = response.data.total;
+        this.list = response.data.items
+        this.total = response.data.total
 
         // Just to simulate the time of the request
         setTimeout(() => {
-          this.listLoading = false;
-        }, 1.5 * 1000);
-      });
+          this.listLoading = false
+        }, 1.5 * 1000)
+      })
     },
 
     handleAppUserFilter() {
-      this.listQuery.page = 1;
-      this.getList();
+      this.listQuery.page = 1
+      this.getList()
     },
 
     resetTemp() {
       this.temp = {
         id: undefined,
-        appUserName: "",
-        appUserType: "",
-        appSystem: "",
-        timestamp: new Date(),
-      };
+        appUserName: '',
+        appUserType: '',
+        appSystem: '',
+        timestamp: new Date()
+      }
     },
 
     handleAppUserCreate() {
-      this.resetTemp();
-      this.dialogFormVisible = true;
+      this.resetTemp()
+      this.dialogFormVisible = true
       this.$nextTick(() => {
-        this.$refs["dataForm"].clearValidate();
-      });
+        this.$refs['dataForm'].clearValidate()
+      })
     },
 
     createAppUserData() {
-      this.$refs["dataForm"].validate((valid) => {
+      this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.temp.id = parseInt(Math.random() * 100) + 1024; // mock a id
+          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
           createAppUser(this.temp).then(() => {
-            this.list.unshift(this.temp);
-            this.dialogFormVisible = false;
+            this.list.unshift(this.temp)
+            this.dialogFormVisible = false
             this.$notify({
-              title: "创建成功",
-              message: "创建成功",
-              type: "success",
-              duration: 2000,
-            });
-          });
+              title: '创建成功',
+              message: '创建成功',
+              type: 'success',
+              duration: 2000
+            })
+          })
         }
-      });
+      })
     },
 
     handleSelectionChange(val) {
-      this.multipleSelection = val;
+      this.multipleSelection = val
     },
 
     handleAppUserExportTemplate() {
-            
-        this.downloadLoading = true;
-        import("@/vendor/Export2Excel").then(excel => {
-          const tHeader = [
-            "用户名",
-            "用户类型",
-            "系统",
-            "签名密钥对",
-            "加密密钥对",
-            "日期"
-          ];
-          const data = [];
-          excel.export_json_to_excel({
-            header: tHeader,
-            data,
-            filename: this.filename
-          });
-          this.$refs.multipleTable.clearSelection();
-          this.downloadLoading = false;
-        });
-     
+      this.downloadLoading = true
+      import('@/vendor/Export2Excel').then(excel => {
+        const tHeader = [
+          '用户名',
+          '用户类型',
+          '系统',
+          '签名密钥对',
+          '加密密钥对',
+          '日期'
+        ]
+        const data = []
+        excel.export_json_to_excel({
+          header: tHeader,
+          data,
+          filename: this.filename
+        })
+        this.$refs.multipleTable.clearSelection()
+        this.downloadLoading = false
+      })
     },
     // handleAppUserExport() {
     //   if (this.multipleSelection.length) {
@@ -369,65 +364,65 @@ export default {
     // },
 
     formatJson(filterVal, jsonData) {
-      return jsonData.map((v) => filterVal.map((j) => v[j]));
+      return jsonData.map((v) => filterVal.map((j) => v[j]))
     },
 
     beforeUpload(file) {
-      const isLt1M = file.size / 1024 / 1024 < 1;
+      const isLt1M = file.size / 1024 / 1024 < 1
 
       if (isLt1M) {
-        return true;
+        return true
       }
 
       this.$message({
-        message: "Please do not upload files larger than 1m in size.",
-        type: "warning",
-      });
-      return false;
+        message: 'Please do not upload files larger than 1m in size.',
+        type: 'warning'
+      })
+      return false
     },
 
     handleSuccess({ results, header }) {
-      let aData = [];
-      debugger;
+      const aData = []
+      debugger
       results.forEach((item) => {
-        debugger;
-        let oUploadData = {
-          appUserName: item["用户名"],
-          appUserType: item["用户类型"],
-          appSystem: item["系统"],
-          signaturekey: item["签名密钥对"],
-          encryptionkey: item["加密密钥对"],
-          timestamp: item["日期"],
-        };
-        aData.push(oUploadData);
-      });
-      this.list = aData.concat(this.list);
+        debugger
+        const oUploadData = {
+          appUserName: item['用户名'],
+          appUserType: item['用户类型'],
+          appSystem: item['系统'],
+          signaturekey: item['签名密钥对'],
+          encryptionkey: item['加密密钥对'],
+          timestamp: item['日期']
+        }
+        aData.push(oUploadData)
+      })
+      this.list = aData.concat(this.list)
     },
 
     handleAppUserGenerateKey() {
-      console.log("生成密钥");
+      console.log('生成密钥')
     },
 
     handleAppUserDelete(row, index) {
-      this.$confirm("确定要删除该用户吗?", "提示", {
-        confirmButtonText: "确认",
-        cancelButtonText: "取消",
-        type: "warning",
+      this.$confirm('确定要删除该用户吗?', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
-        .then(async () => {
-          await deleteUser(row.id);
-          this.list.splice(index, 1);
+        .then(async() => {
+          await deleteUser(row.id)
+          this.list.splice(index, 1)
           this.$message({
-            type: "success",
-            message: "删除成功!",
-          });
+            type: 'success',
+            message: '删除成功!'
+          })
         })
         .catch((err) => {
-          console.error(err);
-        });
-    },
-  },
-};
+          console.error(err)
+        })
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
