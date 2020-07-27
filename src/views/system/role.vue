@@ -250,17 +250,19 @@ export default {
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.checkStrictly = true
-      const routes = this.generateRoutes(this.temp.routes)
-      this.$refs.tree.setCheckedNodes(this.generateArr(routes))
-      // set checked state of a node not affects its father and child nodes
-      this.checkStrictly = false
+      this.$nextTick(() => {
+        const routes = this.generateRoutes(this.temp.routes)
+        this.$refs.tree.setCheckedNodes(this.generateArr(routes))
+        // set checked state of a node not affects its father and child nodes
+        this.checkStrictly = false
+      })
     },
 
     async confirmRole() {
-      const isEdit = this.dialogStatus === 'edit'
+      const isEdit = this.dialogStatus === 'update'
 
       const checkedKeys = this.$refs.tree.getCheckedKeys()
-      this.role.routes = this.generateTree(deepClone(this.serviceRoutes), '/', checkedKeys)
+      this.temp.routes = this.generateTree(deepClone(this.serviceRoutes), '/', checkedKeys)
 
       if (isEdit) {
         const tempData = Object.assign({}, this.temp)
@@ -272,8 +274,8 @@ export default {
         this.roleList.unshift(this.temp)
       }
 
-      const { description, key, name } = this.role
-      this.dialogVisible = false
+      const { description, rolename } = this.temp
+      this.dialogFormVisible = false
       this.$notify({
         title: '成功',
         dangerouslyUseHTMLString: true,
