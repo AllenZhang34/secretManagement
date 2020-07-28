@@ -6,31 +6,31 @@
           <div class="app-container">
             <div class="filter-container">
               <el-input
-                v-model="listQuery.appName"
+                v-model="appSystemListQuery.appSystemName"
                 placeholder="应用名称"
                 style="width: 200px;"
                 class="filter-item"
-                @keyup.enter.native="handleAppFilter"
+                @keyup.enter.native="handleAppSystemFilter"
               />
               <el-button
                 class="filter-item"
                 type="primary"
                 icon="el-icon-search"
-                @click="handleAppFilter"
+                @click="handleAppSystemFilter"
               >搜索</el-button>
               <el-button
                 class="filter-item"
                 style="margin-left: 10px;"
                 type="primary"
                 icon="el-icon-edit"
-                @click="handleAppCreate"
+                @click="handleAppSystemCreate"
               >添加应用系统</el-button>
             </div>
             <div>
               <el-table
-                v-loading="listLoading"
-                :data="list"
-                element-loading-text="拼命加载中"
+                v-loading="appSystemListLoading"
+                :data="appSystemList"
+                element-loading-text="加载中"
                 fit
                 highlight-current-row
               >
@@ -41,23 +41,23 @@
                 </el-table-column>
                 <el-table-column label="应用名称" align="center">
                   <template slot-scope="{row}">
-                    <span>{{ row.appName }}</span>
+                    <span>{{ row.appSystemName }}</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="应用类型" align="center">
                   <template slot-scope="{row}">
-                    <span>{{ row.appType }}</span>
+                    <span>{{ row.appSystemType }}</span>
                   </template>
                 </el-table-column>
-                <el-table-column label="系统" align="center">
+                <el-table-column label="连接系统" align="center">
                   <template slot-scope="{row}">
-                    <span>{{ row.appSystem }}</span>
+                    <span>{{ row.connectSystem }}</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="状态" align="center">
                   <template slot-scope="{row}">
                     <el-switch
-                      v-model="row.status"
+                      v-model="row.appSystemStatus"
                       active-value="active"
                       inactive-value="inactive"
                       @change="handleModifyStatus(row,$event)"
@@ -71,58 +71,57 @@
                 </el-table-column>
                 <el-table-column label="创建日期" align="center">
                   <template slot-scope="{row}">
-                    <span>{{ row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+                    <span>{{ row.appSystemTimestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
                   <template slot-scope="{row}">
-                    <el-button type="text" @click="handleUpdate(row)">编辑</el-button>
-                    <el-button type="text" style="color:red" @click="handleDelete(row)">删除</el-button>
+                    <el-button type="text" @click="handleAppSystemUpdate(row)">编辑</el-button>
+                    <el-button type="text" style="color:red" @click="handleAppSystemDelete(row)">删除</el-button>
                   </template>
                 </el-table-column>
               </el-table>
             </div>
 
             <pagination
-              v-show="total>0"
-              :total="total"
-              :page.sync="listQuery.page"
-              :limit.sync="listQuery.limit"
-              @pagination="getList"
+              v-show="appSystemTotal>0"
+              :total="appSystemTotal"
+              :page.sync="appSystemListQuery.page"
+              :limit.sync="appSystemListQuery.limit"
+              @pagination="getAppSystemList"
             />
           </div>
         </el-card>
       </el-col>
-      <el-col v-if="dialogFormVisible" :md="rightColMd">
+      <el-col v-if="appSystemFormVisible" :md="rightColMd">
         <el-card class="box-card" shadow="hover">
           <div slot="header" class="clearfix">
             <div style="text-align: right;">
-              <el-button style="padding: 0px;" type="text" icon="el-icon-circle-close" @click="hideFrom" />
+              <el-button style="padding: 0px;" type="text" icon="el-icon-circle-close" @click="hideAppSystemFrom" />
             </div>
-            <span>{{ formTitle }}</span>
-
+            <span>{{ appSystemFormTitle }}</span>
           </div>
           <el-form
-            ref="dataForm"
+            ref="appSystemForm"
             :rules="rules"
             :model="temp"
             label-position="left"
             label-width="90px"
             style="width: 400px; margin-left:50px;"
           >
-            <el-form-item label="应用名称" prop="appName">
-              <el-input v-model="temp.appName" placeholder="请输入应用名称" />
+            <el-form-item label="应用名称" prop="appSystemName">
+              <el-input v-model="temp.appSystemName" placeholder="请输入应用名称" />
             </el-form-item>
 
-            <el-form-item label="应用类型" prop="appType">
-              <el-select v-model="temp.appType" class="filter-item" placeholder="请选择应用类型">
+            <el-form-item label="应用类型" prop="appSystemType">
+              <el-select v-model="temp.appSystemType" class="filter-item" placeholder="请选择应用类型">
                 <el-option v-for="item in appTypeOptions" :key="item" :label="item" :value="item" />
               </el-select>
             </el-form-item>
 
-            <el-form-item label="系统" prop="appSystem">
-              <el-select v-model="temp.appSystem" class="filter-item" placeholder="请选择系统类型">
-                <el-option v-for="item in appSystemOptions" :key="item" :label="item" :value="item" />
+            <el-form-item label="系统" prop="connectSystem">
+              <el-select v-model="temp.connectSystem" class="filter-item" placeholder="请选择系统类型">
+                <el-option v-for="item in connectSystemOptions" :key="item" :label="item" :value="item" />
               </el-select>
             </el-form-item>
 
@@ -144,7 +143,6 @@
                 class="select-style"
                 multiple
                 placeholder=""
-                :disabled="operatorSelectList.length>0?false:true"
                 @focus="disableDropDownList('operatorSelect')"
               />
               <el-button
@@ -162,7 +160,6 @@
                 class="select-style"
                 multiple
                 placeholder=""
-                :disabled="decryptorSelectList.length>0?false:true"
                 @focus="disableDropDownList('decryptorSelect')"
               />
               <el-button
@@ -174,10 +171,10 @@
             </el-form-item>
           </el-form>
           <div style="text-align: right;">
-            <el-button @click="dialogFormVisible = false">取消</el-button>
+            <el-button @click="appSystemFormVisible = false">取消</el-button>
             <el-button
               type="primary"
-              @click="dialogStatus==='create'?createAppData():updateAppData()"
+              @click="dialogStatus==='create'?createAppSystemData():updateAppSystemData()"
             >确认</el-button>
           </div>
         </el-card>
@@ -210,7 +207,7 @@
             style="width: 90px"
             class="filter-item"
           >
-            <el-option v-for="item in appSystemOptions" :key="item" :label="item" :value="item" />
+            <el-option v-for="item in connectSystemOptions" :key="item" :label="item" :value="item" />
           </el-select>
           <el-button
             class="filter-item"
@@ -221,11 +218,11 @@
         </div>
         <div>
           <el-table
-            ref="multipleTable"
-            v-loading="loading"
+            ref="multipleAppUserTable"
+            v-loading="appUserTableloading"
             :data="appUserList"
             :row-key="getRowKeys"
-            element-loading-text="拼命加载中"
+            element-loading-text="加载中"
             border
             fit
             highlight-current-row
@@ -291,16 +288,16 @@ export default {
   },
   data() {
     return {
-      list: [],
+      appSystemList: [],
       appUserList: [],
-      total: 0,
+      appSystemTotal: 0,
       appUserTotal: 0,
-      listLoading: true,
-      loading: true,
-      listQuery: {
+      appSystemListLoading: true,
+      appUserTableloading: true,
+      appSystemListQuery: {
         page: 1,
         limit: 5,
-        appName: undefined
+        appSystemName: undefined
       },
       appUserListQuery: {
         page: 1,
@@ -314,31 +311,27 @@ export default {
         operator: '添加操作者',
         decryptor: '添加解密者'
       },
-      formTitle: '创建应用系统',
+      appSystemFormTitle: '创建应用系统',
       dialogStatus: 'create',
       appTypeOptions: ['类型1', '类型2'],
-      appSystemOptions: ['系统1', '系统2'],
+      connectSystemOptions: ['系统1', '系统2'],
       appCertificateOptions: ['证书1', '证书2'],
       appUserTypeOptions: ['通用用户', '业务用户'],
-      appOperatorList: [],
-      decryptorList: [],
-      operatorOptions: [],
-      decryptorOptions: [],
       temp: {
-        appName: '',
-        appType: '',
+        appSystemName: '',
+        appSystemType: '',
         appSystem: '',
         appCertificate: '',
         operatorValue: [],
         decryptorValue: [],
-        status: 'active'
+        appSystemStatus: 'active'
       },
-      dialogFormVisible: false,
+      appSystemFormVisible: false,
       dialogAppUserVisible: false,
       operatorSelectList: [],
       decryptorSelectList: [],
       rules: {
-        appName: [
+        appSystemName: [
           {
             required: true,
             message: '请填写应用名称',
@@ -354,7 +347,7 @@ export default {
           }
         ],
 
-        appType: [
+        appSystemType: [
           {
             required: true,
             message: '请选择应用类型',
@@ -376,54 +369,18 @@ export default {
   },
   computed: {
     leftColMd() {
-      return this.dialogFormVisible === false ? 24 : 15
+      return this.appSystemFormVisible === false ? 24 : 15
     },
     rightColMd() {
-      return this.dialogFormVisible === false ? 0 : 9
+      return this.appSystemFormVisible === false ? 0 : 9
     }
   },
   created() {
-    this.getList()
-  },
-  mounted() {
-    // this.operatorList = this.operatorStates.map(item => {
-    //   return { operatorValue: `value:${item}`, label: `label:${item}` };
-    // });
-    // this.decryptorList = this.decryptorStates.map(item => {
-    //   return { decryptorValue: `value:${item}`, label: `label:${item}` };
-    // });
+    this.getAppSystemList()
   },
   methods: {
     getRowKeys(row) {
       return row.id
-    },
-
-    remoteGetOperatorMethod(query) {
-      if (query !== '') {
-        this.loading = true
-        setTimeout(() => {
-          this.loading = false
-          this.operatorOptions = this.operatorStates.filter((item) => {
-            return item.toLowerCase().indexOf(query.toLowerCase()) > -1
-          })
-        }, 200)
-      } else {
-        this.operatorOptions = []
-      }
-    },
-
-    remoteGetDecryptorMethod(query) {
-      if (query !== '') {
-        this.loading = true
-        setTimeout(() => {
-          this.loading = false
-          this.decryptorOptions = this.decryptorStates.filter((item) => {
-            return item.toLowerCase().indexOf(query.toLowerCase()) > -1
-          })
-        }, 200)
-      } else {
-        this.decryptorOptions = []
-      }
     },
 
     handleModifyStatus(row, event) {
@@ -431,31 +388,31 @@ export default {
         message: '操作成功',
         type: 'success'
       })
-      row.status = event
+      row.appSystemStatus = event
     },
 
-    getList() {
-      this.listLoading = true
-      fetchAppList(this.listQuery).then((response) => {
-        this.list = response.data.items
-        this.total = response.data.total
+    getAppSystemList() {
+      this.appSystemListLoading = true
+      fetchAppList(this.appSystemListQuery).then((response) => {
+        this.appSystemList = response.data.items
+        this.appSystemTotal = response.data.total
 
         // Just to simulate the time of the request
         setTimeout(() => {
-          this.listLoading = false
+          this.appSystemListLoading = false
         }, 1 * 1000)
       })
     },
 
-    handleAppFilter() {
-      this.listQuery.page = 1
-      this.getList()
+    handleAppSystemFilter() {
+      this.appSystemListQuery.page = 1
+      this.getAppSystemList()
     },
 
     resetTemp() {
       this.temp = {
         appName: '',
-        appType: '',
+        appSystemType: '',
         appSystem: '',
         appCertificate: '',
         operatorValue: '',
@@ -464,33 +421,33 @@ export default {
       }
     },
 
-    handleAppCreate() {
-      this.formTitle = '创建应用系统'
+    handleAppSystemCreate() {
+      this.appSystemFormTitle = '创建应用系统'
       this.resetTemp()
-      this.dialogFormVisible = true
+      this.appSystemFormVisible = true
       this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
+        this.$refs['appSystemForm'].clearValidate()
       })
     },
 
-    handleUpdate(row) {
+    handleAppSystemUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
-      this.temp.timestamp = new Date(this.temp.timestamp)
+      this.temp.appSystemTimestamp = new Date(this.temp.timestamp)
       this.dialogStatus = 'update'
-      this.formTitle = '编辑应用系统'
-      this.dialogFormVisible = true
+      this.appSystemFormTitle = '编辑应用系统'
+      this.appSystemFormVisible = true
       this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
+        this.$refs['appSystemForm'].clearValidate()
       })
     },
 
-    createAppData() {
-      this.$refs['dataForm'].validate((valid) => {
+    createAppSystemData() {
+      this.$refs['appSystemForm'].validate((valid) => {
         if (valid) {
           this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
           createApp(this.temp).then(() => {
-            this.list.unshift(this.temp)
-            this.dialogFormVisible = false
+            this.appSystemList.unshift(this.temp)
+            this.appSystemFormVisible = false
             this.$notify({
               title: '创建成功',
               message: '创建成功',
@@ -502,15 +459,15 @@ export default {
       })
     },
 
-    updateAppData() {
-      this.$refs['dataForm'].validate((valid) => {
+    updateAppSystemData() {
+      this.$refs['appSystemForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
-          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
+          tempData.appSystemTimestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
           updateApp(tempData).then(() => {
-            const index = this.list.findIndex((v) => v.id === this.temp.id)
-            this.list.splice(index, 1, this.temp)
-            this.dialogFormVisible = false
+            const index = this.appSystemList.findIndex((v) => v.id === this.temp.id)
+            this.appSystemList.splice(index, 1, this.temp)
+            this.appSystemFormVisible = false
             this.$notify({
               title: '更新成功',
               message: '更新成功',
@@ -522,7 +479,7 @@ export default {
       })
     },
 
-    handleDelete(row, index) {
+    handleAppSystemDelete(row, index) {
       this.$confirm('确定要删除该应用系统吗?', '提示', {
         confirmButtonText: '确认',
         cancelButtonText: '取消',
@@ -530,7 +487,7 @@ export default {
       })
         .then(async() => {
           await deleteApp(row.id)
-          this.list.splice(index, 1)
+          this.appSystemList.splice(index, 1)
           this.$message({
             type: 'success',
             message: '删除成功!'
@@ -540,15 +497,16 @@ export default {
           console.error(err)
         })
     },
-    hideFrom() {
-      this.dialogFormVisible = false
+    hideAppSystemFrom() {
+      this.resetTemp()
+      this.appSystemFormVisible = false
     },
     handleAppUserCreate(useType) {
       this.dialogAppUserTitle = useType
       this.dialogAppUserVisible = true
       this.getAppUserList()
       this.$nextTick(() => {
-        this.$refs.multipleTable.clearSelection()
+        this.$refs.multipleAppUserTable.clearSelection()
       })
     },
 
@@ -557,11 +515,11 @@ export default {
     },
 
     getAppUserList() {
-      this.loading = true
+      this.appUserTableloading = true
       fetchAppUserList(this.appUserListQuery).then((response) => {
         this.appUserList = response.data.items
         this.appUserTotal = response.data.total
-        this.loading = false
+        this.appUserTableloading = false
       })
     },
 
@@ -579,7 +537,7 @@ export default {
       this.operatorSelectList = selectName
       // this.operatorSelectDisable = false
       this.dialogAppUserVisible = false
-      console.log(this.$refs.multipleTable)
+      console.log(this.$refs.multipleAppUserTable)
     },
 
     disableDropDownList(select) {
