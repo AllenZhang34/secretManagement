@@ -139,22 +139,14 @@
 
             <el-form-item label="操作者" prop="appOperator">
               <el-select
-                v-model="operatorSelect"
+                ref="operatorSelect"
+                v-model="operatorSelectList"
+                class="select-style"
                 multiple
-                filterable
-                remote
-                reserve-keyword
-                placeholder="请添加操作者"
-                :remote-method="getAppUserListList"
-                :loading="appUserListLoading"
-              >
-                <el-option
-                  v-for="item in appUserList"
-                  :key="item.id"
-                  :label="item.appUserName"
-                  :value="item.id"
-                />
-              </el-select>
+                placeholder=""
+                :disabled="operatorSelectList.length>0?false:true"
+                @focus="disableDropDownList('operatorSelect')"
+              />
               <el-button
                 style="margin-left: 10px;"
                 type="text"
@@ -165,10 +157,13 @@
 
             <el-form-item label="解密者" prop="appDecryptor">
               <el-select
-                v-model="decryptorSelect"
+                ref="decryptorSelect"
+                v-model="decryptorSelectList"
+                class="select-style"
                 multiple
-                placeholder="请添加解密者"
-                @focus="handleSelect('decryptorSelect')"
+                placeholder=""
+                :disabled="decryptorSelectList.length>0?false:true"
+                @focus="disableDropDownList('decryptorSelect')"
               />
               <el-button
                 style="margin-left: 10px;"
@@ -227,7 +222,7 @@
         <div>
           <el-table
             ref="multipleTable"
-            v-loading="appUserListLoading"
+            v-loading="loading"
             :data="appUserList"
             :row-key="getRowKeys"
             element-loading-text="拼命加载中"
@@ -260,7 +255,7 @@
           :total="appUserTotal"
           :page.sync="appUserListQuery.page"
           :limit.sync="appUserListQuery.limit"
-          @pagination="getAppUserListList"
+          @pagination="getAppUserList"
         />
       </div>
       <div slot="footer" class="dialog-footer">
@@ -301,7 +296,7 @@ export default {
       total: 0,
       appUserTotal: 0,
       listLoading: true,
-      appUserListLoading: true,
+      loading: true,
       listQuery: {
         page: 1,
         limit: 5,
@@ -325,11 +320,10 @@ export default {
       appSystemOptions: ['系统1', '系统2'],
       appCertificateOptions: ['证书1', '证书2'],
       appUserTypeOptions: ['通用用户', '业务用户'],
-      operatorList: [],
+      appOperatorList: [],
       decryptorList: [],
       operatorOptions: [],
       decryptorOptions: [],
-      loading: false,
       temp: {
         appName: '',
         appType: '',
@@ -341,8 +335,8 @@ export default {
       },
       dialogFormVisible: false,
       dialogAppUserVisible: false,
-      operatorSelect: [],
-      decryptorSelect: [],
+      operatorSelectList: [],
+      decryptorSelectList: [],
       rules: {
         appName: [
           {
@@ -552,7 +546,7 @@ export default {
     handleAppUserCreate(useType) {
       this.dialogAppUserTitle = useType
       this.dialogAppUserVisible = true
-      this.getAppUserListList()
+      this.getAppUserList()
       this.$nextTick(() => {
         this.$refs.multipleTable.clearSelection()
       })
@@ -562,30 +556,18 @@ export default {
       this.multipleSelection = val
     },
 
-    getAppUserListList(query) {
-      const that = this
-      if (query && query.length > 0) {
-        this.appUserListQuery.appUserName = query
-      }
+    getAppUserList() {
+      this.loading = true
       fetchAppUserList(this.appUserListQuery).then((response) => {
-        that.appUserList = response.data.items
-        that.appUserTotal = response.data.total
-        that.appUserListLoading = false
-        if (!query && that.operatorSelect.length > 0) {
-          that.appUserList.forEach(element => {
-            that.operatorSelect.forEach(item => {
-              if (element.id === item) {
-                that.$refs.multipleTable.toggleRowSelection(element)
-              }
-            })
-          })
-        }
+        this.appUserList = response.data.items
+        this.appUserTotal = response.data.total
+        this.loading = false
       })
     },
 
     handleAppUserFilter() {
       this.appUserListQuery.page = 1
-      this.getAppUserListList()
+      this.getAppUserList()
     },
 
     createAppUserData() {
@@ -594,20 +576,20 @@ export default {
         selectName.push(element.appUserName)
       })
       this.temp.operatorValue = selectName
+      this.operatorSelectList = selectName
+      // this.operatorSelectDisable = false
+      this.dialogAppUserVisible = false
       console.log(this.$refs.multipleTable)
     },
 
-    handleSelect(type) {
-      console.log(type)
+    disableDropDownList(select) {
+      this.$refs[select].blur()
     }
   }
 }
 </script>
 
-<style lang="scss" scoped>
-body {
-  background-color: #f2f3f5;
-}
+<style lang="scss">
 .filter-label {
   display: inline-block;
   position: relative;
@@ -618,5 +600,8 @@ body {
   background-color: #f0f2f5;
   padding: 30px;
   min-height: calc(100vh - 84px);
+}
+.select-style i {
+  display: none;
 }
 </style>

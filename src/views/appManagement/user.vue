@@ -2,14 +2,14 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input
-        v-model="listQuery.appUserName"
+        v-model="appUserListQuery.appUserName"
         placeholder="用户名"
         style="width: 200px;"
         class="filter-item"
         @keyup.enter.native="handleAppUserFilter"
       />
       <el-select
-        v-model="listQuery.appUserType"
+        v-model="appUserListQuery.appUserType"
         placeholder="用户类型"
         clearable
         style="width: 200px;"
@@ -19,7 +19,7 @@
         <el-option v-for="item in appUserTypeOptions" :key="item" :label="item" :value="item" />
       </el-select>
       <el-select
-        v-model="listQuery.appSystem"
+        v-model="appUserListQuery.appSystem"
         placeholder="系统"
         clearable
         style="width: 90px"
@@ -86,7 +86,7 @@
       <el-table
         ref="multipleTable"
         v-loading="listLoading"
-        :data="list"
+        :data="appUserList"
         element-loading-text="拼命加载中"
         border
         fit
@@ -130,8 +130,8 @@
     <pagination
       v-show="total>0"
       :total="total"
-      :page.sync="listQuery.page"
-      :limit.sync="listQuery.limit"
+      :page.sync="appUserListQuery.page"
+      :limit.sync="appUserListQuery.limit"
       @pagination="getList"
     />
 
@@ -197,12 +197,12 @@ export default {
   },
   data() {
     return {
-      list: null,
+      appUserList: [],
       total: 0,
       listLoading: true,
       filename: '应用用户模板',
       multipleSelection: [],
-      listQuery: {
+      appUserListQuery: {
         page: 1,
         limit: 20,
         appUserName: undefined,
@@ -248,8 +248,8 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      fetchAppUserList(this.listQuery).then((response) => {
-        this.list = response.data.items
+      fetchAppUserList(this.appUserListQuery).then((response) => {
+        this.appUserList = response.data.items
         this.total = response.data.total
 
         // Just to simulate the time of the request
@@ -260,7 +260,7 @@ export default {
     },
 
     handleAppUserFilter() {
-      this.listQuery.page = 1
+      this.appUserListQuery.page = 1
       this.getList()
     },
 
@@ -287,7 +287,7 @@ export default {
         if (valid) {
           this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
           createAppUser(this.temp).then(() => {
-            this.list.unshift(this.temp)
+            this.appUserList.unshift(this.temp)
             this.dialogFormVisible = false
             this.$notify({
               title: '创建成功',
@@ -396,7 +396,7 @@ export default {
         }
         aData.push(oUploadData)
       })
-      this.list = aData.concat(this.list)
+      this.appUserList = aData.concat(this.appUserList)
     },
 
     handleAppUserGenerateKey() {
@@ -411,7 +411,7 @@ export default {
       })
         .then(async() => {
           await deleteUser(row.id)
-          this.list.splice(index, 1)
+          this.appUserList.splice(index, 1)
           this.$message({
             type: 'success',
             message: '删除成功!'

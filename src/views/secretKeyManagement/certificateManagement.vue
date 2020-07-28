@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input
-        v-model="listQuery.certificateName"
+        v-model="certificateListQuery.certificateName"
         placeholder="证书名称"
         style="width: 200px;"
         class="filter-item"
@@ -25,8 +25,8 @@
     <div>
       <el-table
         v-loading="listLoading"
-        :data="list"
-        element-loading-text="拼命加载中"
+        :data="certificateList"
+        element-loading-text="加载中"
         border
         fit
         highlight-current-row
@@ -46,7 +46,7 @@
         </el-table-column>
         <el-table-column label="系统" align="center">
           <template slot-scope="{row}">
-            <span>{{ row.appSystem }}</span>
+            <span>{{ row.systemType }}</span>
           </template>
         </el-table-column>
         <el-table-column label="状态" align="center">
@@ -77,9 +77,9 @@
     <pagination
       v-show="total>0"
       :total="total"
-      :page.sync="listQuery.page"
-      :limit.sync="listQuery.limit"
-      @pagination="getList"
+      :page.sync="certificateListQuery.page"
+      :limit.sync="certificateListQuery.limit"
+      @pagination="getCertificateList"
     />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
@@ -106,6 +106,17 @@
           </el-select>
         </el-form-item>
 
+        <el-form-item label="系统类型" prop="systemType">
+          <el-select v-model="temp.systemType" class="filter-item" placeholder="请选择系统类型">
+            <el-option
+              v-for="item in systemTypeOptions"
+              :key="item"
+              :label="item"
+              :value="item"
+            />
+          </el-select>
+        </el-form-item>
+
         <el-form-item label="证书上传" prop="certificateUpload">
           <el-upload
             class="upload-demo"
@@ -114,7 +125,7 @@
             action="https://jsonplaceholder.typicode.com/posts/"
             :before-upload="beforeCertificateUpload"
           >
-            <i class="el-icon-upload"></i>
+            <i class="el-icon-upload" />
             <div class="el-upload__text">
               将证书拖到此处，或
               <em>点击上传</em>
@@ -138,169 +149,176 @@ import {
   fetchCertificateList,
   createCertificate,
   updateCertificate
-} from "@/api/certificatemanagement";
+} from '@/api/certificatemanagement'
 
-import Pagination from "@/components/Pagination";
-import { parseTime } from "@/utils";
+import Pagination from '@/components/Pagination'
+import { parseTime } from '@/utils'
 
 export default {
-  name: "CertificateManagementList",
+  name: 'CertificateManagementList',
   components: {
     Pagination
   },
   filters: {
     certificateTypeFilter(type) {
       const typeMap = {
-        应用证书: "",
-        用户证书: "warning"
-      };
-      return typeMap[type];
+        应用证书: '',
+        用户证书: 'warning'
+      }
+      return typeMap[type]
     },
     certificateStatusFilter(status) {
       const statusMap = {
-        有效: "success",
-        失效: "danger"
-      };
-      return statusMap[status];
+        有效: 'success',
+        失效: 'danger'
+      }
+      return statusMap[status]
     },
     parseTime: parseTime
   },
   data() {
     return {
-      list: null,
+      certificateList: [],
       total: 0,
       listLoading: true,
-      listQuery: {
+      certificateListQuery: {
         page: 1,
         limit: 20,
-        appName: undefined
+        certificateName: undefined
       },
       textMap: {
-        update: "替换证书",
-        create: "添加证书"
+        update: '替换证书',
+        create: '添加证书'
       },
-      dialogStatus: "",
-      certificateTypeOptions: ["应用证书", "用户证书"],
+      dialogStatus: '',
+      certificateTypeOptions: ['应用证书', '用户证书'],
+      systemTypeOptions: ['系统1', '系统2'],
       temp: {
-        certificateName: "",
-        certificateType: "",
-        appSystem:"系统1",
-        certificateStatus:"有效"
+        certificateName: '',
+        certificateType: '',
+        systemType: '',
+        certificateStatus: '有效'
       },
       dialogFormVisible: false,
       rules: {
         certificateName: [
           {
             required: true,
-            message: "请填写证书名称",
-            trigger: "change"
+            message: '请填写证书名称',
+            trigger: 'change'
           }
         ],
-
         certificateType: [
           {
             required: true,
-            message: "请选择证书",
-            trigger: "change"
+            message: '请选择证书',
+            trigger: 'change'
+          }
+        ],
+        systemType: [
+          {
+            required: true,
+            message: '请选择系统',
+            trigger: 'change'
           }
         ]
       }
-    };
+    }
   },
   created() {
-    this.getList();
+    this.getCertificateList()
   },
   methods: {
     beforeCertificateUpload(file) {
-      this.$message.error('证书文件格式错误!');
+      this.$message.error('证书文件格式错误!')
     },
 
-    getList() {
-      this.listLoading = true;
-      fetchCertificateList(this.listQuery).then(response => {
-        this.list = response.data.items;
-        this.total = response.data.total;
+    getCertificateList() {
+      this.listLoading = true
+      fetchCertificateList(this.certificateListQuery).then(response => {
+        this.certificateList = response.data.items
+        this.total = response.data.total
 
         // Just to simulate the time of the request
         setTimeout(() => {
-          this.listLoading = false;
-        }, 1 * 1000);
-      });
+          this.listLoading = false
+        }, 1 * 1000)
+      })
     },
 
     handlCertificateFilter() {
-      this.listQuery.page = 1;
-      this.getList();
+      this.certificateListQuery.page = 1
+      this.getCertificateList()
     },
 
     resetTemp() {
       this.temp = {
-        certificateName: "",
-        certificateType: "",
-        appSystem:"",
-        certificateStatus:""
-      };
+        certificateName: '',
+        certificateType: '',
+        systemType: '',
+        certificateStatus: '有效'
+      }
     },
 
     handleCertificateCreate() {
-      this.resetTemp();
-      this.dialogFormVisible = true;
+      this.resetTemp()
+      this.dialogStatus = 'create'
+      this.dialogFormVisible = true
       this.$nextTick(() => {
-        this.$refs["dataForm"].clearValidate();
-      });
+        this.$refs['dataForm'].clearValidate()
+      })
     },
 
     handleCertificateUpdate(row) {
-      this.temp = Object.assign({}, row); // copy obj
-      //this.temp.timestamp = new Date(this.temp.timestamp);
-      this.dialogStatus = "update";
-      this.dialogFormVisible = true;
+      this.temp = Object.assign({}, row) // copy obj
+      this.dialogStatus = 'update'
+      this.dialogFormVisible = true
       this.$nextTick(() => {
-        this.$refs["dataForm"].clearValidate();
-      });
+        this.$refs['dataForm'].clearValidate()
+      })
     },
 
     createCertificateData() {
-      this.$refs["dataForm"].validate(valid => {
+      this.$refs['dataForm'].validate(valid => {
         if (valid) {
-          this.temp.id = parseInt(Math.random() * 100) + 1024; // mock a id
-          this.temp.certificateTimestamp = new Date(this.temp.timestamp);
-          this.temp.timestamp = new Date(this.temp.timestamp);
+          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
+          this.temp.certificateTimestamp = new Date(this.temp.timestamp)
+          this.temp.timestamp = new Date(this.temp.timestamp)
           createCertificate(this.temp).then(() => {
-            this.list.unshift(this.temp);
-            this.dialogFormVisible = false;
+            this.certificateList.unshift(this.temp)
+            this.dialogFormVisible = false
             this.$notify({
-              title: "创建成功",
-              message: "创建成功",
-              type: "success",
+              title: '创建成功',
+              message: '创建成功',
+              type: 'success',
               duration: 2000
-            });
-          });
+            })
+          })
         }
-      });
+      })
     },
 
     updateCertificateData() {
-      this.$refs["dataForm"].validate(valid => {
+      this.$refs['dataForm'].validate(valid => {
         if (valid) {
-          const tempData = Object.assign({}, this.temp);
-          tempData.timestamp = +new Date(tempData.timestamp); // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateApp(tempData).then(() => {
-            const index = this.list.findIndex(v => v.id === this.temp.id);
-            this.list.splice(index, 1, this.temp);
-            this.dialogFormVisible = false;
+          const tempData = Object.assign({}, this.temp)
+          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
+          updateCertificate(tempData).then(() => {
+            const index = this.certificateList.findIndex(v => v.id === this.temp.id)
+            this.certificateList.splice(index, 1, this.temp)
+            this.dialogFormVisible = false
             this.$notify({
-              title: "更新成功",
-              message: "更新成功",
-              type: "success",
+              title: '更新成功',
+              message: '更新成功',
+              type: 'success',
               duration: 2000
-            });
-          });
+            })
+          })
         }
-      });
+      })
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
