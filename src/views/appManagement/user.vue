@@ -309,11 +309,8 @@ export default {
       import('@/vendor/Export2Excel').then(excel => {
         const tHeader = [
           '用户名',
-          '用户类型',
-          '系统',
-          '签名密钥对',
-          '加密密钥对',
-          '日期'
+          '用户类型ID',
+          '连接系统ID'
         ]
         const data = []
         excel.export_json_to_excel({

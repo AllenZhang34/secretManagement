@@ -1,185 +1,170 @@
 <template>
-  <div class="mixin-components-container">
-    <el-row :gutter="10">
-      <el-col :md="leftColMd">
-        <el-card class="box-card">
-          <div class="app-container">
-            <div class="filter-container">
-              <el-input
-                v-model="appSystemListQuery.appSystemName"
-                placeholder="应用名称"
-                style="width: 200px;"
-                class="filter-item"
-                @keyup.enter.native="handleAppSystemFilter"
-              />
-              <el-button
-                class="filter-item"
-                type="primary"
-                icon="el-icon-search"
-                @click="handleAppSystemFilter"
-              >搜索</el-button>
-              <el-button
-                class="filter-item"
-                style="margin-left: 10px;"
-                type="primary"
-                icon="el-icon-edit"
-                @click="handleAppSystemCreate"
-              >添加应用系统</el-button>
-            </div>
-            <div>
-              <el-table
-                v-loading="appSystemListLoading"
-                :data="appSystemList"
-                element-loading-text="加载中"
-                fit
-                highlight-current-row
-              >
-                <el-table-column label="ID" align="center">
-                  <template slot-scope="{row}">
-                    <span>{{ row.id }}</span>
-                  </template>
-                </el-table-column>
-                <el-table-column label="应用名称" align="center">
-                  <template slot-scope="{row}">
-                    <span>{{ row.appSystemName }}</span>
-                  </template>
-                </el-table-column>
-                <el-table-column label="应用类型" align="center">
-                  <template slot-scope="{row}">
-                    <span>{{ row.appSystemType }}</span>
-                  </template>
-                </el-table-column>
-                <el-table-column label="连接系统" align="center">
-                  <template slot-scope="{row}">
-                    <span>{{ row.connectSystem }}</span>
-                  </template>
-                </el-table-column>
-                <el-table-column label="状态" align="center">
-                  <template slot-scope="{row}">
-                    <el-switch
-                      v-model="row.appSystemStatus"
-                      active-value="active"
-                      inactive-value="inactive"
-                      @change="handleModifyStatus(row,$event)"
-                    />
-                  </template>
-                </el-table-column>
-                <el-table-column label="证书有效期" align="center">
-                  <template slot-scope="{row}">
-                    <span>{{ row.certificateTimestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-                  </template>
-                </el-table-column>
-                <el-table-column label="创建日期" align="center">
-                  <template slot-scope="{row}">
-                    <span>{{ row.appSystemTimestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-                  </template>
-                </el-table-column>
-                <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-                  <template slot-scope="{row}">
-                    <el-button type="text" @click="handleAppSystemUpdate(row)">编辑</el-button>
-                    <el-button type="text" style="color:red" @click="handleAppSystemDelete(row)">删除</el-button>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </div>
-
-            <pagination
-              v-show="appSystemTotal>0"
-              :total="appSystemTotal"
-              :page.sync="appSystemListQuery.page"
-              :limit.sync="appSystemListQuery.limit"
-              @pagination="getAppSystemList"
+  <div class="app-container">
+    <div class="filter-container">
+      <el-input
+        v-model="appSystemListQuery.appSystemName"
+        placeholder="应用名称"
+        style="width: 200px;"
+        class="filter-item"
+        @keyup.enter.native="handleAppSystemFilter"
+      />
+      <el-button
+        class="filter-item"
+        type="primary"
+        icon="el-icon-search"
+        @click="handleAppSystemFilter"
+      >搜索</el-button>
+      <el-button
+        class="filter-item"
+        style="margin-left: 10px;"
+        type="primary"
+        icon="el-icon-edit"
+        @click="handleAppSystemCreate"
+      >添加应用系统</el-button>
+    </div>
+    <div>
+      <el-table
+        v-loading="appSystemListLoading"
+        :data="appSystemList"
+        element-loading-text="加载中"
+        fit
+        highlight-current-row
+      >
+        <el-table-column label="ID" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row.id }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="应用名称" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row.appSystemName }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="应用类型" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row.appSystemType }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="连接系统" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row.connectSystem }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" align="center">
+          <template slot-scope="{row}">
+            <el-switch
+              v-model="row.appSystemStatus"
+              active-value="active"
+              inactive-value="inactive"
+              @change="handleModifyStatus(row,$event)"
             />
-          </div>
-        </el-card>
-      </el-col>
-      <el-col v-if="appSystemFormVisible" :md="rightColMd">
-        <el-card class="box-card" shadow="hover">
-          <div slot="header" class="clearfix">
-            <div style="text-align: right;">
-              <el-button style="padding: 0px;" type="text" icon="el-icon-circle-close" @click="hideAppSystemFrom" />
-            </div>
-            <span>{{ appSystemFormTitle }}</span>
-          </div>
-          <el-form
-            ref="appSystemForm"
-            :rules="rules"
-            :model="temp"
-            label-position="left"
-            label-width="90px"
-            style="width: 400px; margin-left:50px;"
-          >
-            <el-form-item label="应用名称" prop="appSystemName">
-              <el-input v-model="temp.appSystemName" placeholder="请输入应用名称" />
-            </el-form-item>
+          </template>
+        </el-table-column>
+        <el-table-column label="证书有效期" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row.certificateTimestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="创建日期" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row.appSystemTimestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+          <template slot-scope="{row}">
+            <el-button type="text" @click="handleAppSystemUpdate(row)">编辑</el-button>
+            <el-button type="text" style="color:red" @click="handleAppSystemDelete(row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
 
-            <el-form-item label="应用类型" prop="appSystemType">
-              <el-select v-model="temp.appSystemType" class="filter-item" placeholder="请选择应用类型">
-                <el-option v-for="item in appTypeOptions" :key="item" :label="item" :value="item" />
-              </el-select>
-            </el-form-item>
+    <pagination
+      v-show="appSystemTotal>0"
+      :total="appSystemTotal"
+      :page.sync="appSystemListQuery.page"
+      :limit.sync="appSystemListQuery.limit"
+      @pagination="getAppSystemList"
+    />
 
-            <el-form-item label="系统" prop="connectSystem">
-              <el-select v-model="temp.connectSystem" class="filter-item" placeholder="请选择系统类型">
-                <el-option v-for="item in connectSystemOptions" :key="item" :label="item" :value="item" />
-              </el-select>
-            </el-form-item>
+    <el-dialog :title="appSystemFormTitle" :visible.sync="appSystemFormVisible">
+      <el-form
+        ref="appSystemForm"
+        :rules="rules"
+        :model="temp"
+        label-position="left"
+        label-width="90px"
+        style="width: 400px; margin-left:50px;"
+      >
+        <el-form-item label="应用名称" prop="appSystemName">
+          <el-input v-model="temp.appSystemName" placeholder="请输入应用名称" />
+        </el-form-item>
 
-            <el-form-item label="证书" prop="appCertificate">
-              <el-select v-model="temp.appCertificate" class="filter-item" placeholder="请选择第三方证书">
-                <el-option
-                  v-for="item in appCertificateOptions"
-                  :key="item"
-                  :label="item"
-                  :value="item"
-                />
-              </el-select>
-            </el-form-item>
+        <el-form-item label="应用类型" prop="appSystemType">
+          <el-select v-model="temp.appSystemType" class="filter-item" placeholder="请选择应用类型">
+            <el-option v-for="item in appTypeOptions" :key="item" :label="item" :value="item" />
+          </el-select>
+        </el-form-item>
 
-            <el-form-item label="操作者" prop="appOperator">
-              <el-select
-                ref="operatorSelect"
-                v-model="operatorSelectList"
-                class="select-style"
-                multiple
-                placeholder=""
-                @focus="disableDropDownList('operatorSelect')"
-              />
-              <el-button
-                style="margin-left: 10px;"
-                type="text"
-                icon="el-icon-circle-plus-outline"
-                @click="handleAppUserCreate('operator')"
-              >添加操作者</el-button>
-            </el-form-item>
+        <el-form-item label="系统" prop="connectSystem">
+          <el-select v-model="temp.connectSystem" class="filter-item" placeholder="请选择系统类型">
+            <el-option v-for="item in connectSystemOptions" :key="item" :label="item" :value="item" />
+          </el-select>
+        </el-form-item>
 
-            <el-form-item label="解密者" prop="appDecryptor">
-              <el-select
-                ref="decryptorSelect"
-                v-model="decryptorSelectList"
-                class="select-style"
-                multiple
-                placeholder=""
-                @focus="disableDropDownList('decryptorSelect')"
-              />
-              <el-button
-                style="margin-left: 10px;"
-                type="text"
-                icon="el-icon-circle-plus-outline"
-                @click="handleAppUserCreate('decryptor')"
-              >添加解密者</el-button>
-            </el-form-item>
-          </el-form>
-          <div style="text-align: right;">
-            <el-button @click="appSystemFormVisible = false">取消</el-button>
-            <el-button
-              type="primary"
-              @click="dialogStatus==='create'?createAppSystemData():updateAppSystemData()"
-            >确认</el-button>
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
+        <el-form-item label="证书" prop="appCertificate">
+          <el-select v-model="temp.appCertificate" class="filter-item" placeholder="请选择第三方证书">
+            <el-option
+              v-for="item in appCertificateOptions"
+              :key="item"
+              :label="item"
+              :value="item"
+            />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="操作者" prop="operatorSelectList">
+          <el-select
+            ref="operatorSelect"
+            v-model="temp.operatorSelectList"
+            class="select-style"
+            multiple
+            placeholder=""
+            @focus="disableDropDownList('operatorSelect')"
+          />
+          <el-button
+            style="margin-left: 10px;"
+            type="text"
+            icon="el-icon-circle-plus-outline"
+            @click="handleAppUserCreate('operator')"
+          >添加操作者</el-button>
+        </el-form-item>
+
+        <el-form-item label="解密者" prop="decryptorSelectList">
+          <el-select
+            ref="decryptorSelect"
+            v-model="temp.decryptorSelectList"
+            class="select-style"
+            multiple
+            placeholder=""
+            @focus="disableDropDownList('decryptorSelect')"
+          />
+          <el-button
+            style="margin-left: 10px;"
+            type="text"
+            icon="el-icon-circle-plus-outline"
+            @click="handleAppUserCreate('decryptor')"
+          >添加解密者</el-button>
+        </el-form-item>
+      </el-form>
+      <div style="text-align: right;">
+        <el-button @click="appSystemFormVisible = false">取消</el-button>
+        <el-button
+          type="primary"
+          @click="dialogStatus==='create'?createAppSystemData():updateAppSystemData()"
+        >确认</el-button>
+      </div>
+    </el-dialog>
     <el-dialog :title="titleMap[dialogAppUserTitle]" :visible.sync="dialogAppUserVisible">
       <div>
         <div class="filter-container">
@@ -226,7 +211,6 @@
             border
             fit
             highlight-current-row
-            @selection-change="handleSelectionChange"
           >
             <el-table-column type="selection" :reserve-selection="true" align="center" />
             <el-table-column label="用户名" align="center">
@@ -256,7 +240,7 @@
         />
       </div>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogAppUserVisible = false">取消</el-button>
+        <el-button @click="cancleAppUserData()">取消</el-button>
         <el-button type="primary" @click="createAppUserData()">确认</el-button>
       </div>
     </el-dialog>
@@ -322,14 +306,13 @@ export default {
         appSystemType: '',
         appSystem: '',
         appCertificate: '',
-        operatorValue: [],
-        decryptorValue: [],
+        operatorSelectList: [],
+        decryptorSelectList: [],
         appSystemStatus: 'active'
       },
       appSystemFormVisible: false,
       dialogAppUserVisible: false,
-      operatorSelectList: [],
-      decryptorSelectList: [],
+      selectItem: [],
       rules: {
         appSystemName: [
           {
@@ -339,7 +322,7 @@ export default {
           }
         ],
 
-        appSystem: [
+        connectSystem: [
           {
             required: true,
             message: '请选择系统类型',
@@ -358,10 +341,10 @@ export default {
         appCertificate: [
           { required: true, message: '请选择证书', trigger: 'change' }
         ],
-        operatorValue: [
+        operatorSelectList: [
           { required: true, message: '请选择操作者', trigger: 'change' }
         ],
-        decryptorValue: [
+        decryptorSelectList: [
           { required: true, message: '请选择解密者', trigger: 'change' }
         ]
       }
@@ -415,8 +398,8 @@ export default {
         appSystemType: '',
         appSystem: '',
         appCertificate: '',
-        operatorValue: '',
-        decryptorValue: '',
+        operatorSelectList: [],
+        decryptorSelectList: [],
         status: 'active'
       }
     },
@@ -497,16 +480,20 @@ export default {
           console.error(err)
         })
     },
-    hideAppSystemFrom() {
-      this.resetTemp()
-      this.appSystemFormVisible = false
-    },
+
     handleAppUserCreate(useType) {
       this.dialogAppUserTitle = useType
       this.dialogAppUserVisible = true
       this.getAppUserList()
+
       this.$nextTick(() => {
-        this.$refs.multipleAppUserTable.clearSelection()
+        if (this.temp.operatorSelectList.length > 0) {
+          // this.selectItem.forEach(row => {
+          this.$refs.multipleAppUserTable.toggleRowSelection(this.selectItem)
+          // })
+        } else {
+          this.$refs.multipleAppUserTable.clearSelection()
+        }
       })
     },
 
@@ -530,14 +517,24 @@ export default {
 
     createAppUserData() {
       const selectName = []
-      this.multipleSelection.forEach(element => {
+      this.$refs.multipleAppUserTable.selection.forEach(element => {
+        this.selectItem.push(element)
         selectName.push(element.appUserName)
       })
-      this.temp.operatorValue = selectName
-      this.operatorSelectList = selectName
-      // this.operatorSelectDisable = false
+      if (this.dialogAppUserTitle === 'operator') {
+        this.temp.operatorSelectList = selectName
+      } else {
+        this.temp.decryptorSelectList = selectName
+      }
+
+      // this.operatorSelectList = selectName
+      this.operatorSelectDisable = false
       this.dialogAppUserVisible = false
-      console.log(this.$refs.multipleAppUserTable)
+    },
+
+    cancleAppUserData() {
+      // this.selectItem = []
+      this.dialogAppUserVisible = false
     },
 
     disableDropDownList(select) {
