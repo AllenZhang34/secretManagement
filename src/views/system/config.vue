@@ -5,261 +5,255 @@
         <div slot="header" class="clearfix">
           <span>连接系统配置</span>
         </div>
-        <div class="filter-container">
-          <el-input
-            v-model="connectSystemListQuery.connectSystemName"
-            placeholder="名称"
-            style="width: 200px;"
-            class="filter-item"
-            @keyup.enter.native="handleConnectSystemFilter"
-          />
-          <el-button
-            class="filter-item"
-            type="primary"
-            icon="el-icon-search"
-            @click="handleConnectSystemFilter"
-          >搜索</el-button>
-          <el-button
-            class="filter-item"
-            style="margin-left: 10px;"
-            type="primary"
-            icon="el-icon-edit"
-            @click="handleConfigCreate"
-          >添加连接系统</el-button>
-        </div>
-        <div>
-          <el-table :data="connectSystemList" border style="width: 100%;">
-            <el-table-column label="连接系统ID" align="center" width="220">
-              <template slot-scope="{row}">
-                <span>{{ row.connectSystemId }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="连接系统名称" align="center" width="220">
-              <template slot-scope="{row}">
-                <span>{{ row.connectSystemName }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="描述" align="center">
-              <template slot-scope="{row}">
-                <span>{{ row.connectSystemDescription }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-              <template slot-scope="{row}">
-                <el-button type="primary" size="small" @click="handleConfigUpdate(row)">编辑</el-button>
-                <el-button type="danger" size="small" @click="handleConfigDelete(row)">删除</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-          <pagination
-            v-show="connectSystemListTotal>0"
-            :total="connectSystemListTotal"
-            :page.sync="connectSystemListQuery.page"
-            :limit.sync="connectSystemListQuery.limit"
-            @pagination="getConnectSystemList"
-          />
-        </div>
+        <config-table
+          :create-title="connectSystemCreateName"
+          :config-list="connectSystemList"
+          :config-list-total="connectSystemTotal"
+          :config-list-query="connectSystemListQuery"
+          @configListFilter="getConnectSystem"
+          @createConfig="createConnectSystemData"
+          @updateConfig="updateConnectSystemData"
+          @deleteConfig="deleteConnectSystemData"
+        />
       </el-card>
     </el-row>
-
     <el-row style="margin-top:30px;">
       <el-card class="box-card">
         <div slot="header" class="clearfix">
           <span>应用类型配置</span>
         </div>
-        <div class="filter-container">
-          <el-input
-            v-model="connectAppTypeListQuery.appTypeName"
-            placeholder="名称"
-            style="width: 200px;"
-            class="filter-item"
-            @keyup.enter.native="handleAppTypeFilter"
-          />
-          <el-button
-            class="filter-item"
-            type="primary"
-            icon="el-icon-search"
-            @click="handleAppTypeFilter"
-          >搜索</el-button>
-          <el-button
-            class="filter-item"
-            style="margin-left: 10px;"
-            type="primary"
-            icon="el-icon-edit"
-            @click="handleConfigCreate"
-          >添加应用类型</el-button>
-        </div>
-        <div>
-          <el-table :data="appTypeList" border style="width: 100%;">
-            <el-table-column label="应用类型ID" align="center" width="220">
-              <template slot-scope="{row}">
-                <span>{{ row.appTypeId }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="应用类型名称" align="center" width="220">
-              <template slot-scope="{row}">
-                <span>{{ row.appTypeName }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="描述" align="center">
-              <template slot-scope="{row}">
-                <span>{{ row.appTypeDescription }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-              <template slot-scope="{row}">
-                <el-button type="primary" size="small" @click="handleConfigUpdate(row)">编辑</el-button>
-                <el-button type="danger" size="small" @click="handleConfigDelete(row)">删除</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-        </div>
+        <config-table
+          :create-title="appTypeCreateName"
+          :config-list="appTypeList"
+          :config-list-total="appTypeTotal"
+          :config-list-query="appTypeListQuery"
+          @configListFilter="getAppType"
+          @createConfig="createAppTypeData"
+          @updateConfig="updateAppTypeData"
+          @deleteConfig="deleteAppTypeData"
+        />
       </el-card>
     </el-row>
-
     <el-row style="margin-top:30px;">
       <el-card class="box-card">
-        <el-card class="box-card">
-          <div slot="header" class="clearfix">
-            <span>服务器密码机地址配置</span>
-          </div>
-          <div class="filter-container">
-            <el-input
-              v-model="connectSystemListQuery.connectSystemName"
-              placeholder="名称"
-              style="width: 200px;"
-              class="filter-item"
-              @keyup.enter.native="handleConnectSystemFilter"
-            />
-            <el-button
-              class="filter-item"
-              type="primary"
-              icon="el-icon-search"
-              @click="handleConnectSystemFilter"
-            >搜索</el-button>
-            <el-button
-              class="filter-item"
-              style="margin-left: 10px;"
-              type="primary"
-              icon="el-icon-edit"
-              @click="handleConfigCreate"
-            >添加服务器密码机地址</el-button>
-          </div>
-          <div>
-            <el-table :data="connectSystemList" border style="width: 100%;">
-              <el-table-column label="服务器密码机ID" align="center" width="220">
-                <template slot-scope="{row}">
-                  <span>{{ row.connectSystemId }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="服务器密码机名称" align="center" width="220">
-                <template slot-scope="{row}">
-                  <span>{{ row.connectSystemName }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="描述" align="center">
-                <template slot-scope="{row}">
-                  <span>{{ row.connectSystemDescription }}</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-                <template slot-scope="{row}">
-                  <el-button type="primary" size="small" @click="handleConfigUpdate(row)">编辑</el-button>
-                  <el-button type="danger" size="small" @click="handleConfigDelete(row)">删除</el-button>
-                </template>
-              </el-table-column>
-            </el-table>
-          </div>
-        </el-card>
+        <div slot="header" class="clearfix">
+          <span>服务器密码机地址配置</span>
+        </div>
+        <config-table
+          :create-title="cipherMachineCreateName"
+          :config-list="cipherMachineList"
+          :config-list-total="cipherMachineTotal"
+          :config-list-query="cipherMachineListQuery"
+          @configListFilter="getCipherMachine"
+          @createConfig="createCipherMachineData"
+          @updateConfig="updateCipherMachineData"
+          @deleteConfig="deleteCipherMachineData"
+        />
       </el-card>
     </el-row>
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form
-        ref="dataForm"
-        :rules="rules"
-        :model="temp"
-        label-position="left"
-        label-width="70px"
-        style="width: 400px; margin-left:50px;"
-      >
-        <el-form-item label="角色名称">
-          <el-input v-model="temp.rolename" />
-        </el-form-item>
-
-        <el-form-item label="描述">
-          <el-input
-            v-model="temp.description"
-            :autosize="{ minRows: 2, maxRows: 4}"
-            type="textarea"
-          />
-        </el-form-item>
-
-        <el-form-item label="权限对象">
-          <el-tree
-            ref="tree"
-            :check-strictly="checkStrictly"
-            :data="routesData"
-            :props="defaultProps"
-            show-checkbox
-            node-key="path"
-            class="permission-tree"
-          />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="confirmRole">确认</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
 <script>
-import Pagination from '@/components/Pagination'
-import { parseTime } from '@/utils'
+import ConfigTable from './components/ConfigTable'
+import {
+  getConnectSystemList,
+  getAppTypeList,
+  getCipherMachineList,
+  createConnectSystem,
+  createAppType,
+  createCipherMachine,
+  updateConnectSystem,
+  updateAppType,
+  updateCipherMachine,
+  deleteConnectSystem,
+  deleteAppType,
+  deleteCipherMachine
+} from '@/api/configmanagement'
+
 export default {
   name: 'ConfigmanagementList',
   components: {
-    Pagination
-  },
-  filters: {
-    parseTime: parseTime
+    ConfigTable
   },
   data() {
     return {
-      connectSystemListTotal: 0,
+      connectSystemCreateName: '添加连接系统',
+      appTypeCreateName: '添加应用类型',
+      cipherMachineCreateName: '添加服务器密码机地址',
       connectSystemList: [],
       appTypeList: [],
-      connectSystemListQuery: {},
-      connectAppTypeListQuery: {},
-      dialogFormVisible: false,
-      textMap: {
-        update: '编辑用户',
-        create: '创建用户'
+      cipherMachineList: [],
+      connectSystemListLoading: false,
+      appTypeListLoading: false,
+      cipherMachineListLoading: false,
+      connectSystemTotal: 0,
+      appTypeTotal: 0,
+      cipherMachineTotal: 0,
+      connectSystemListQuery: {
+        page: 1,
+        limit: 5,
+        configName: undefined
       },
-      temp: {
-        id: undefined,
-        type: '',
-        name: '',
-        description: ''
+      appTypeListQuery: {
+        page: 1,
+        limit: 5,
+        configName: undefined
       },
-      dialogStatus: '',
-      rules: {
-        type: [{ required: true, message: '请选择类型', trigger: 'change' }],
-        name: [
-          { required: true, message: '请输入用户名称', trigger: 'change' }
-        ]
+      cipherMachineListQuery: {
+        page: 1,
+        limit: 5,
+        configName: undefined
       }
     }
   },
   created() {
-    this.getConnectSystemList()
+    this.getConnectSystem()
+    this.getAppType()
+    this.getCipherMachine()
   },
   methods: {
-    handleConnectSystemFilter() {},
-    handleConfigCreate() {},
-    handleAppTypeFilter() {},
-    getConnectSystemList() {}
+    getConnectSystem(configListQuery) {
+      this.connectSystemListLoading = true
+      getConnectSystemList(configListQuery || this.connectSystemListQuery).then(response => {
+        this.connectSystemList = response.data.items
+        this.connectSystemTotal = response.data.total
+        setTimeout(() => {
+          this.connectSystemListLoading = false
+        }, 1.5 * 1000)
+      })
+    },
+
+    getAppType(configListQuery) {
+      this.appTypeListLoading = true
+      getAppTypeList(configListQuery || this.appTypeListQuery).then(response => {
+        this.appTypeList = response.data.items
+        this.appTypeTotal = response.data.total
+        setTimeout(() => {
+          this.appTypeListLoading = false
+        }, 1.5 * 1000)
+      })
+    },
+
+    getCipherMachine(configListQuery) {
+      this.cipherMachineListLoading = true
+      getCipherMachineList(configListQuery || this.cipherMachineListQuery).then(response => {
+        this.cipherMachineList = response.data.items
+        this.cipherMachineTotal = response.data.total
+        setTimeout(() => {
+          this.cipherMachineListLoading = false
+        }, 1.5 * 1000)
+      })
+    },
+    createConnectSystemData(temp) {
+      temp.configId = parseInt(Math.random() * 100) + 1024 // mock a id
+      createConnectSystem(temp).then(() => {
+        this.connectSystemList.unshift(temp)
+        // this.dialogFormVisible = false
+        this.$notify({
+          title: '创建成功',
+          message: '创建成功',
+          type: 'success',
+          duration: 2000
+        })
+      })
+    },
+    createAppTypeData(temp) {
+      temp.configId = parseInt(Math.random() * 100) + 1024 // mock a id
+      createAppType(temp).then(() => {
+        this.appTypeList.unshift(temp)
+        // this.dialogFormVisible = false
+        this.$notify({
+          title: '创建成功',
+          message: '创建成功',
+          type: 'success',
+          duration: 2000
+        })
+      })
+    },
+    createCipherMachineData(temp) {
+      temp.configId = parseInt(Math.random() * 100) + 1024 // mock a id
+      createCipherMachine(temp).then(() => {
+        this.cipherMachineList.unshift(temp)
+        // this.dialogFormVisible = false
+        this.$notify({
+          title: '创建成功',
+          message: '创建成功',
+          type: 'success',
+          duration: 2000
+        })
+      })
+    },
+    updateConnectSystemData(temp) {
+      updateConnectSystem(temp).then(() => {
+        const index = this.connectSystemList.findIndex(v => v.configId === temp.configId)
+        this.connectSystemList.splice(index, 1, temp)
+        this.$notify({
+          title: '更新成功',
+          message: '更新成功',
+          type: 'success',
+          duration: 2000
+        })
+      })
+    },
+    updateAppTypeData(temp) {
+      updateAppType(temp).then(() => {
+        const index = this.appTypeList.findIndex(v => v.configId === temp.configId)
+        this.appTypeList.splice(index, 1, temp)
+        this.$notify({
+          title: '更新成功',
+          message: '更新成功',
+          type: 'success',
+          duration: 2000
+        })
+      })
+    },
+    updateCipherMachineData(temp) {
+      updateCipherMachine(temp).then(() => {
+        const index = this.cipherMachineList.findIndex(v => v.configId === temp.configId)
+        this.cipherMachineList.splice(index, 1, temp)
+        this.$notify({
+          title: '更新成功',
+          message: '更新成功',
+          type: 'success',
+          duration: 2000
+        })
+      })
+    },
+    deleteConnectSystemData(id, index) {
+      deleteConnectSystem(id).then(() => {
+        this.connectSystemList.splice(index, 1)
+        this.$notify({
+          title: '删除成功',
+          message: '删除成功',
+          type: 'success',
+          duration: 2000
+        })
+      })
+    },
+    deleteAppTypeData(id, index) {
+      deleteAppType(id).then(() => {
+        this.appTypeList.splice(index, 1)
+        this.$notify({
+          title: '删除成功',
+          message: '删除成功',
+          type: 'success',
+          duration: 2000
+        })
+      })
+    },
+    deleteCipherMachineData(id, index) {
+      deleteCipherMachine(id).then(() => {
+        this.cipherMachineList.splice(index, 1)
+        this.$notify({
+          title: '删除成功',
+          message: '删除成功',
+          type: 'success',
+          duration: 2000
+        })
+      })
+    }
+
   }
 }
 </script>
@@ -270,7 +264,5 @@ export default {
   padding: 30px;
   min-height: calc(100vh - 84px);
 }
-.component-item {
-  min-height: 100px;
-}
+
 </style>

@@ -110,7 +110,7 @@
         style="width: 400px; margin-left:50px;"
       >
         <el-form-item label="账户" prop="account">
-          <el-input :disabled="dialogStatus==='create'?false:true" v-model="temp.account" tabindex="1" />
+          <el-input v-model="temp.account" :disabled="dialogStatus==='create'?false:true" tabindex="1" />
         </el-form-item>
 
         <el-form-item label="用户名" prop="username">
@@ -152,27 +152,26 @@
 <script>
 import {
   fetchList,
-  fetchUser,
   createUser,
   updateUser,
   deleteUser
-} from "@/api/usermanagement";
+} from '@/api/usermanagement'
 
-import Pagination from "@/components/Pagination";
-import { parseTime } from "@/utils";
+import Pagination from '@/components/Pagination'
+import { parseTime } from '@/utils'
 
 export default {
-  name: "UsermanagementList",
+  name: 'UsermanagementList',
   components: {
     Pagination
   },
   filters: {
     roleFilter(role) {
       const roleMap = {
-        user: "success",
-        admin: "danger"
-      };
-      return roleMap[role];
+        user: 'success',
+        admin: 'danger'
+      }
+      return roleMap[role]
     },
     parseTime: parseTime
   },
@@ -190,203 +189,203 @@ export default {
         role: undefined,
         status: undefined
       },
-      roleOptions: ["admin", "user"],
-      statusptions: ["active", "inactive"],
+      roleOptions: ['admin', 'user'],
+      statusptions: ['active', 'inactive'],
       temp: {
         id: undefined,
-        account: "",
-        username: "",
+        account: '',
+        username: '',
         timestamp: new Date(),
-        role: "",
-        password: "",
-        status: "active"
+        role: '',
+        password: '',
+        status: 'active'
       },
       dialogFormVisible: false,
-      dialogStatus: "",
+      dialogStatus: '',
       textMap: {
-        update: "编辑用户",
-        create: "创建用户"
+        update: '编辑用户',
+        create: '创建用户'
       },
       rules: {
         account: [
-          { required: true, message: "请输入账号名称", trigger: "blur" }
+          { required: true, message: '请输入账号名称', trigger: 'blur' }
         ],
         username: [
-          { required: true, message: "请输入用户名称", trigger: "blur" }
+          { required: true, message: '请输入用户名称', trigger: 'blur' }
         ],
         password: [
           {
             required: true,
-            message: "请输入密码",
+            message: '请输入密码',
             transform: value => value,
-            trigger: "blur"
+            trigger: 'blur'
           },
           {
-            type: "string",
-            message: "请输入不包含空格的字符",
-            trigger: "blur",
+            type: 'string',
+            message: '请输入不包含空格的字符',
+            trigger: 'blur',
             transform(value) {
-              if (value && value.indexOf(" ") === -1) {
-                return value;
+              if (value && value.indexOf(' ') === -1) {
+                return value
               } else {
-                return false;
+                return false
               }
             }
           },
           {
-            trigger: "blur",
+            trigger: 'blur',
             validator: (rule, value, callback) => {
-              var passwordreg = /(?=.*\d)(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).{6,16}/;
+              var passwordreg = /(?=.*\d)(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).{6,16}/
               if (!passwordreg.test(value)) {
                 callback(
-                  new Error("密码必须由数字、字母、特殊字符组合,请输入6-16位")
-                );
+                  new Error('密码必须由数字、字母、特殊字符组合,请输入6-16位')
+                )
               } else {
-                callback();
+                callback()
               }
             }
           }
         ]
       },
       capsTooltip: false,
-      passwordType: "password"
-    };
+      passwordType: 'password'
+    }
   },
   created() {
-    this.getList();
+    this.getList()
   },
   methods: {
     checkCapslock(e) {
-      const { key } = e;
-      this.capsTooltip = key && key.length === 1 && key >= "A" && key <= "Z";
+      const { key } = e
+      this.capsTooltip = key && key.length === 1 && key >= 'A' && key <= 'Z'
     },
 
     showPwd() {
-      if (this.passwordType === "password") {
-        this.passwordType = "";
+      if (this.passwordType === 'password') {
+        this.passwordType = ''
       } else {
-        this.passwordType = "password";
+        this.passwordType = 'password'
       }
       this.$nextTick(() => {
-        this.$refs.password.focus();
-      });
+        this.$refs.password.focus()
+      })
     },
 
     getList() {
-      this.listLoading = true;
+      this.listLoading = true
       fetchList(this.listQuery).then(response => {
-        this.list = response.data.items;
-        this.total = response.data.total;
+        this.list = response.data.items
+        this.total = response.data.total
 
         // Just to simulate the time of the request
         setTimeout(() => {
-          this.listLoading = false;
-        }, 1.5 * 1000);
-      });
+          this.listLoading = false
+        }, 1.5 * 1000)
+      })
     },
 
     handleFilter() {
-      this.listQuery.page = 1;
-      this.getList();
+      this.listQuery.page = 1
+      this.getList()
     },
 
     handleModifyStatus(row, event) {
       this.$message({
-        message: "操作成功",
-        type: "success"
-      });
-      row.status = event;
+        message: '操作成功',
+        type: 'success'
+      })
+      row.status = event
     },
 
     resetTemp() {
       this.temp = {
         id: undefined,
-        account: "",
-        username: "",
+        account: '',
+        username: '',
         timestamp: new Date(),
-        role: "",
-        password: "",
-        status: "active"
-      };
+        role: '',
+        password: '',
+        status: 'active'
+      }
     },
 
     handleCreate() {
-      this.resetTemp();
-      this.dialogStatus = "create";
-      this.dialogFormVisible = true;
+      this.resetTemp()
+      this.dialogStatus = 'create'
+      this.dialogFormVisible = true
       this.$nextTick(() => {
-        this.$refs["dataForm"].clearValidate();
-      });
+        this.$refs['dataForm'].clearValidate()
+      })
     },
 
     createData() {
-      this.$refs["dataForm"].validate(valid => {
+      this.$refs['dataForm'].validate(valid => {
         if (valid) {
-          this.temp.id = parseInt(Math.random() * 100) + 1024; // mock a id
+          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
           createUser(this.temp).then(() => {
-            this.list.unshift(this.temp);
-            this.dialogFormVisible = false;
+            this.list.unshift(this.temp)
+            this.dialogFormVisible = false
             this.$notify({
-              title: "创建成功",
-              message: "创建成功",
-              type: "success",
+              title: '创建成功',
+              message: '创建成功',
+              type: 'success',
               duration: 2000
-            });
-          });
+            })
+          })
         }
-      });
+      })
     },
 
     handleUpdate(row) {
-      this.temp = Object.assign({}, row); // copy obj
-      this.temp.timestamp = new Date(this.temp.timestamp);
-      this.dialogStatus = "update";
-      this.dialogFormVisible = true;
+      this.temp = Object.assign({}, row) // copy obj
+      this.temp.timestamp = new Date(this.temp.timestamp)
+      this.dialogStatus = 'update'
+      this.dialogFormVisible = true
       this.$nextTick(() => {
-        this.$refs["dataForm"].clearValidate();
-      });
+        this.$refs['dataForm'].clearValidate()
+      })
     },
 
     updateData() {
-      this.$refs["dataForm"].validate(valid => {
+      this.$refs['dataForm'].validate(valid => {
         if (valid) {
-          const tempData = Object.assign({}, this.temp);
-          tempData.timestamp = +new Date(tempData.timestamp); // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
+          const tempData = Object.assign({}, this.temp)
+          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
           updateUser(tempData).then(() => {
-            const index = this.list.findIndex(v => v.id === this.temp.id);
-            this.list.splice(index, 1, this.temp);
-            this.dialogFormVisible = false;
+            const index = this.list.findIndex(v => v.id === this.temp.id)
+            this.list.splice(index, 1, this.temp)
+            this.dialogFormVisible = false
             this.$notify({
-              title: "更新成功",
-              message: "更新成功",
-              type: "success",
+              title: '更新成功',
+              message: '更新成功',
+              type: 'success',
               duration: 2000
-            });
-          });
+            })
+          })
         }
-      });
+      })
     },
 
     handleDelete(row, index) {
-      this.$confirm("确定要删除该用户吗?", "提示", {
-        confirmButtonText: "确认",
-        cancelButtonText: "取消",
-        type: "warning"
+      this.$confirm('确定要删除该用户吗?', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
-        .then(async () => {
-          await deleteUser(row.id);
-          this.list.splice(index, 1);
+        .then(async() => {
+          await deleteUser(row.id)
+          this.list.splice(index, 1)
           this.$message({
-            type: "success",
-            message: "删除成功!"
-          });
+            type: 'success',
+            message: '删除成功!'
+          })
         })
         .catch(err => {
-          console.error(err);
-        });
+          console.error(err)
+        })
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
